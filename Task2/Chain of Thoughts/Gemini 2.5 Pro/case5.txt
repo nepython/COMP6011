@@ -1,0 +1,64 @@
+Show thinking
+
+Here's my thinking process to arrive at the clinical and final diagnoses:
+
+1.  **Deconstruct the Request:**
+    
+    *   The user wants two diagnoses for the provided clinical case: a _clinical diagnosis_ and a _final diagnosis_.
+    *   Both diagnoses should be concise ("in very few words").
+    *   The _clinical diagnosis_ should be based on initial presentation: symptoms, history, physical exam, preliminary tests (labs, initial imaging).
+    *   The _final diagnosis_ should be definitive, based on _all_ tests, including biopsies, advanced imaging, consultations, etc.
+    *   I need to carefully read the case description and identify the key findings relevant to each diagnosis type.
+2.  **Analyze the Case for Clinical Diagnosis:**
+    
+    *   **Presenting Complaint:** Transient vision loss (left eye), described as sparkles then darkness, improving but still blurry on arrival.
+    *   **Physical Exam Findings:**
+        *   Reduced visual acuity in the left eye initially (hand motions), improving later (20/40).
+        *   Severe ptosis (drooping eyelid) of the left upper eyelid.
+        *   Palpable, nontender, irregular mass under the left superior orbital rim.
+        *   Prominent temporal arteries (more on right), but normal pulsations, no tenderness.
+        *   Bilateral jaw pain with chewing firm foods (jaw claudication).
+        *   Lateral hip soreness after walking.
+        *   Right temporal headache 2 days prior.
+        *   Fatigue and weight loss (4.5 kg) over a year.
+    *   **Medical History:** Largely unremarkable (presbyopia, ex-smoker, Eurasian origin). Family history of breast cancer, no ocular/autoimmune disease.
+    *   **Initial Lab Results:** Normocytic anemia, elevated liver enzymes (ALT, AST, ALP). Normal kidney/thyroid function, electrolytes, glucose, etc. Negative ANA. Normal IgG.
+    *   **Initial Imaging (MRI Head/Orbits):**
+        *   Enlargement of the _right_ medial rectus muscle with fat stranding.
+        *   Enhancing mass-like lesion in the _left_ anterior superior orbit, near lacrimal gland. Hypointense on STIR (suggests less fluid/inflammation, maybe more cellular/fibrous?).
+    *   **Treatment Started:** Aspirin, empirical IV methylprednisolone (high-dose steroids).
+    *   **Synthesis for Clinical Diagnosis:**
+        *   The acute transient vision loss (amaurosis fugax) in an older adult, combined with jaw claudication, headache, prominent temporal arteries, fatigue, weight loss, and anemia, strongly suggests **Giant Cell Arteritis (GCA)**. The elevated inflammatory markers (though not explicitly stated as ESR/CRP in the initial summary, the anemia and systemic symptoms fit) would also support this.
+        *   However, the _orbital findings_ are unusual for typical GCA. There's a left orbital mass causing ptosis and the initial vision loss, _and_ right eye muscle enlargement. This points towards an inflammatory process _in the orbit(s)_.
+        *   The systemic symptoms (weight loss, fatigue, elevated liver enzymes, anemia) and the multi-focal nature (both orbits involved differently, plus systemic symptoms) raise suspicion for a systemic inflammatory or malignant process.
+        *   Given the strong GCA pointers (age, vision loss, jaw claudication, headache) plus the orbital mass, a reasonable initial clinical diagnosis would focus on the most urgent possibility (GCA) or a broader category encompassing the orbital inflammation. "Suspected Giant Cell Arteritis" is a strong candidate. "Orbital inflammatory disease" or "Orbital mass with systemic symptoms" are also possible but less specific regarding the likely _cause_ based on the classic GCA symptoms. Let's lean towards the most prominent syndromic diagnosis initially suspected. The empirical steroid treatment also points towards suspected GCA or another significant inflammatory condition.
+3.  **Analyze the Case for Final Diagnosis:**
+    
+    *   **Further Investigations:**
+        *   Temporal artery ultrasound: Normal. (This _decreases_ the likelihood of GCA, but doesn't fully rule it out, especially cranial GCA).
+        *   Abdominal Ultrasound: Heterogeneous liver, enlarged periportal lymph node.
+        *   CT Chest/Abdomen/Pelvis: Multiple liver calcifications, hypoattenuation right hepatic lobe, diffuse mesenteric/retroperitoneal lymphadenopathy with _calcifications_, prominent right hilar lymph node. Lungs clear.
+        *   Further Labs: Negative ANCA, negative fungal/TB tests (Blastomyces, Coccidioides, Histoplasma, IGRA).
+    *   **Clinical Course:** Developed diplopia on right gaze, mild limitation of right eye abduction (consistent with right medial rectus involvement seen on MRI). Left against medical advice after second steroid dose.
+    *   **Synthesis for Final Diagnosis:**
+        *   The negative temporal artery ultrasound makes classic GCA less likely, although cranial or large-vessel vasculitis isn't completely excluded.
+        *   The widespread lymphadenopathy (mesenteric, retroperitoneal, hilar) with _calcifications_, liver abnormalities (heterogeneity, calcifications, hypoattenuation), and orbital involvement (mass, muscle enlargement) point strongly towards a _systemic granulomatous disease_.
+        *   The negative tests for common infectious granulomatous diseases (TB, fungi) make those less likely, though not impossible.
+        *   **Sarcoidosis** is a classic systemic granulomatous disease that can cause:
+            *   Orbital involvement (masses, lacrimal gland, extraocular muscle enlargement).
+            *   Lymphadenopathy (hilar, abdominal), often with calcification later.
+            *   Liver involvement.
+            *   Systemic symptoms (fatigue, weight loss).
+            *   Anemia of chronic disease.
+            *   Elevated liver enzymes.
+            *   It can sometimes mimic GCA symptoms (though headache/jaw claudication are less typical than in GCA). The negative ANCA helps differentiate from ANCA-associated vasculitis.
+        *   While a biopsy would be needed for _absolute definitive_ confirmation (showing non-caseating granulomas), the combination of widespread calcified lymphadenopathy, liver involvement, and bilateral orbital inflammation in the absence of infection or other clear causes makes sarcoidosis the most likely _final clinical diagnosis_ based on the _available_ information provided in the case summary. Other possibilities like IgG4-related disease or lymphoma might be considered, but the pattern, especially the calcified lymph nodes, fits well with sarcoidosis.
+        *   The case description doesn't explicitly state biopsy results. Therefore, the "final diagnosis" here is the most likely diagnosis after _all the described tests_ were completed.
+4.  **Refine Diagnoses:**
+    
+    *   **Clinical Diagnosis:** Needs to reflect the initial suspicion driving treatment. "Suspected Giant Cell Arteritis" captures the urgency and key symptoms. "Orbital inflammation and systemic symptoms" is also accurate but less specific. Given the classic GCA symptoms presented, "Suspected Giant Cell Arteritis" seems most appropriate for the _initial_ working diagnosis.
+    *   **Final Diagnosis:** Based on the full picture (especially imaging showing systemic granulomatous features and negative specific tests), "Systemic Sarcoidosis" is the most fitting diagnosis based on the provided information.
+5.  **Final Check:** Do the diagnoses meet the criteria?
+    
+    *   Clinical Diagnosis: Based on initial presentation (vision loss, jaw claudication, headache, fatigue, weight loss, orbital mass, anemia). Yes. Concise? Yes ("Suspected Giant Cell Arteritis").
+    *   Final Diagnosis: Based on subsequent imaging (systemic lymphadenopathy with calcification, liver involvement, orbital findings) and negative specific tests (fungi, TB, ANCA, temporal artery US). Yes. Concise? Yes ("Systemic Sarcoidosis").

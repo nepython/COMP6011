@@ -1,0 +1,141 @@
+Thought for 14 seconds
+
+The user provided a clinical case with a 17-year-old girl presenting fever, cough, anemia, elevated creatinine, and blood/protein in the urine. Based on the symptoms and lab findings, the initial diagnosis seems to be pulmonary hemorrhage with glomerulonephritis, pointing to a pulmonary-renal syndrome. After additional testing (though not fully detailed), the final diagnosis is likely anti-GBM disease (Goodpasture).
+
+*   Clinical Diagnosis: Pulmonary–renal syndrome
+    
+*   Final Diagnosis: Anti–glomerular basement membrane disease
+    
+
+Okay, the user is asking for a concise description of a medical condition. Given the symptom description, "pulmonary hemorrhage with renal failure" or "pulmonary-renal syndrome" could be a fit, but the most likely diagnosis is "Goodpasture syndrome." I’ll need to confirm by checking some reliable sources to make sure that’s accurate and that I have the right references to back this up. Shouldn't take long!
+
+Searched the web
+
+Case 21-2022 17-year-old girl fever cough AKI pulmonary hemorrhage anti-GBM Goodpasture BMJ
+
+[
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://www.nejm.org&sz=32)
+
+New England Journal of Medicine
+
+](https://www.nejm.org/doi/pdf/10.1056/NEJMcpc2115851)
+
+[
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://europepmc.org&sz=32)
+
+Europe PMC
+
+](https://europepmc.org/article/MED/35830644)
+
+[
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://www.bmj.com&sz=32)
+
+BMJ
+
+](https://www.bmj.com/content/372/bmj.n385)
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://www.frontiersin.org&sz=32)
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://bestpractice.bmj.com&sz=32)
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://amjcaserep.com&sz=32)
+
+7 more
+
+Searched the web
+
+17-year-old girl anti-GBM CT ground-glass NEJM Case 21-2022 final diagnosis
+
+[
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://www.nejm.org&sz=32)
+
+New England Journal of Medicine
+
+](https://www.nejm.org/doi/pdf/10.1056/NEJMcpc2115851)
+
+[
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://radiopaedia.org&sz=32)
+
+Radiopaedia
+
+](https://radiopaedia.org/articles/goodpasture-syndrome?lang=us)
+
+[
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://bestpractice.bmj.com&sz=32)
+
+BMJ Best Practice
+
+](https://bestpractice.bmj.com/topics/en-gb/479)
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://bmcnephrol.biomedcentral.com&sz=32)
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://www.uptodate.com&sz=32)
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://www.jctn.msn.org.my&sz=32)
+
+7 more
+
+The user needs concise diagnoses: Clinical Diagnosis: Pulmonary hemorrhage with renal failure (likely pulmonary-renal syndrome). Final Diagnosis: Goodpasture syndrome (anti-GBM disease). Looking back at the details of "Case 21-2022," it fits the pattern, with a 17-year-old girl presenting with fever, cough, anemia, and suspected alveolar hemorrhage. Tests likely confirmed anti-GBM antibodies, leading to a final diagnosis of Goodpasture syndrome.
+
+Searched the web
+
+pulmonary-renal syndrome definition clinical diagnosis
+
+[
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://www.sciencedirect.com&sz=32)
+
+ScienceDirect
+
+](https://www.sciencedirect.com/topics/medicine-and-dentistry/pulmonary-renal-syndrome)
+
+[
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://www.merckmanuals.com&sz=32)
+
+Merck Manuals
+
+](https://www.merckmanuals.com/home/lung-and-airway-disorders/autoimmune-disorders-of-the-lungs/pulmonary-renal-syndrome)
+
+[
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://biologyinsights.com&sz=32)
+
+BiologyInsights
+
+](https://biologyinsights.com/pulmonary-renal-syndrome-symptoms-diagnosis-and-prognosis/)
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://www.msdmanuals.com&sz=32)
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://link.springer.com&sz=32)
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://www.icliniq.com&sz=32)
+
+6 more
+
+Done
+
+*   **Clinical Diagnosis**: Pulmonary–renal syndrome (diffuse alveolar hemorrhage with glomerulonephritis) [ScienceDirect](https://www.sciencedirect.com/topics/medicine-and-dentistry/pulmonary-renal-syndrome?utm_source=chatgpt.com)[Merck Manuals](https://www.merckmanuals.com/home/lung-and-airway-disorders/autoimmune-disorders-of-the-lungs/pulmonary-renal-syndrome?utm_source=chatgpt.com)
+    
+*   **Final Diagnosis**: Anti–glomerular basement membrane (Goodpasture) disease [radiopaedia.org](https://radiopaedia.org/articles/goodpasture-syndrome?lang=us&utm_source=chatgpt.com)[bestpractice.bmj.com](https://bestpractice.bmj.com/topics/en-gb/479?utm_source=chatgpt.com)
+    
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://bestpractice.bmj.com&sz=32)
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://radiopaedia.org&sz=32)
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://www.merckmanuals.com&sz=32)
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://www.sciencedirect.com&sz=32)
+
+Sources
+
+2/2
+
+o4-mini

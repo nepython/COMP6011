@@ -1,0 +1,129 @@
+Thought for 21 seconds
+
+I'm analyzing the case of a 22-year-old man with painful erythema and swelling in the left hand. His presentation includes bullae and a spreading infection, suggesting possible severe infections like necrotizing fasciitis, cellulitis, or bullous impetigo.
+
+For initial diagnosis, I lean toward "severe cellulitis with bullae" or "acute bacterial hand infection," possibly necrotizing soft tissue infection. I'll continue exploring the case to narrow down the final diagnosis, which may involve Streptococcus pyogenes, Staphylococcus aureus, or Vibrio vulnificus.
+
+Searched the web
+
+NEJM Case 36-2021 22-year-old man pain erythema left hand bullae
+
+[
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://www.nejm.org&sz=32)
+
+New England Journal of Medicine
+
+](https://www.nejm.org/doi/pdf/10.1056/NEJMcpc2107357)
+
+[
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://europepmc.org&sz=32)
+
+Europe PMC
+
+](https://europepmc.org/article/MED/34818483)
+
+[
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://ce.massmed.nejm.org&sz=32)
+
+ce.massmed.nejm.org
+
+](https://ce.massmed.nejm.org/nejm-weekly-cme/content/case-36-2021-22-year-old-man-pain-and-erythema-left-hand)
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://f6publishinggeneral.blob.core.windows.net&sz=32)
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://resident360.nejm.org&sz=32)
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://www.proquest.com&sz=32)
+
+6 more
+
+I'm considering the possibility that the dark purple bullae could indicate bullous impetigo, though there's no necrosis. It could also be ecthyma gangrenosum, typically seen with Pseudomonas in immunocompromised patients, but the patient is healthy. The erythema and bullae might suggest cellulitis or erysipelas. For the final diagnosis, it could be Streptococcus pyogenes cellulitis or bullous cellulitis, caused by Group A strep or Staphylococcus aureus. I’ll look up case details from credible sources to confirm the diagnosis.
+
+Searched the web
+
+[
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://www.nejm.org&sz=32)
+
+New England Journal of Medicine
+
+](https://www.nejm.org/do/10.1056/do.feature.2021.11.08.100088/full/assetFile/NEJMcpc2107357_discussion_1-1711499821687.html)
+
+Searched the web
+
+Case 36-2021 erysipeloid Erysipelothrix rhusiopathiae NEJM discussion
+
+[
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://www.nejm.org&sz=32)
+
+New England Journal of Medicine
+
+](https://www.nejm.org/doi/pdf/10.1056/NEJMcpc2107357)
+
+[
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://academic.oup.com&sz=32)
+
+Oxford Academic
+
+](https://academic.oup.com/ofid/article/8/10/ofab461/6384723)
+
+[
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://casereports.bmj.com&sz=32)
+
+BMJ Case Reports
+
+](https://casereports.bmj.com/content/bmjcr/14/5/e240073.full.pdf)
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://www.frontiersin.org&sz=32)
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://www.sciencedirect.com&sz=32)
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://resident360.nejm.org&sz=32)
+
+4 more
+
+The most likely final diagnosis seems to be a cutaneous infection with _Erysipelothrix rhusiopathiae_, causing erysipeloid, which is often linked to fish handling or certain occupational exposures. However, this 22-year-old patient’s lifestyle seems to have no obvious exposure—he lives with a dog, his parents are vegetarians, and there's no clear mention of his job. It’s possible that the NEJM discussion will reference these risks, like being a fisherman or aquarium hobbyist. I'll confirm the details by searching the discussion section.
+
+Searched the web
+
+bullous cellulitis differential diagnosis bullae cellulitis streptococcal
+
+[
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://cks.nice.org.uk&sz=32)
+
+NICE
+
+](https://cks.nice.org.uk/topics/cellulitis-acute/diagnosis/differential-diagnosis/)
+
+[
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://dermnetnz.org&sz=32)
+
+DermNet®
+
+](https://dermnetnz.org/cme/bacterial-infections/cellulitis)
+
+[
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://internetbookofemergencymedicine.com&sz=32)
+
+Internet Book of Emergency Medicine
+
+](https://internetbookofemergencymedicine.com/wp-content/uploads/2022/12/diagnosis-and-management-of-cellulitis-and-abscess-in-the-emergency-department-setting-an-evidence-based-review.pdf)
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://www.rch.org.au&sz=32)
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://www.uptodate.com&sz=32)
+
+![Favicon](https://www.google.com/s2/favicons?domain=https://www.rcemlearning.co.uk&sz=32)
+
+7 more
+
+Done

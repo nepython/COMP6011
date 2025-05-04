@@ -1,0 +1,188 @@
+Alright, let's break this down. The patient is an 11-year-old girl with redness of the eyes. She's had this for about 8 weeks, with intermittent eyelid swelling but no other symptoms like pain or discharge. She was treated for possible preseptal cellulitis but didn't improve. Then, she was seen by ophthalmology, where they found white cells in the anterior chamber, keratic precipitates, posterior synechiae, iris nodules, optic-disk swelling, and retinal hemorrhages. That's a lot of eye findings, suggesting uveitis.
+
+She also had a positive interferon-gamma release assay for tuberculosis, which was indeterminate later on. Chest CT showed hilar fullness and diffuse lymphadenopathy. That's concerning for tuberculosis or maybe sarcoidosis.
+
+Later, she had MRI showing optic-disk enhancement and iris enhancement, consistent with uveitis. She was started on steroids and antitubercular therapy empirically.
+
+Given her history of emigrating from West Africa, tuberculosis is a possibility. But she also had a positive interferon-gamma release assay six months ago and was supposed to be treated for latent TB, but it's unclear if she received the treatment.
+
+Now, in the rheumatology clinic, they're evaluating her further. She has no other symptoms like fever, weight loss, or joint pain. Her parents are healthy, and she's up to date on vaccinations.
+
+So, for the clinical diagnosis, based on her symptoms, history, and initial tests, it's likely uveitis, possibly related to tuberculosis or another systemic condition.
+
+For the final diagnosis, we need to consider all the test results. She had negative tests for HIV, syphilis, and Lyme disease. Her urinalysis was normal. She had an indeterminate interferon-gamma release assay, but a previous positive one. Chest CT showed lymphadenopathy, which could be due to TB or sarcoidosis.
+
+However, she also had optic-disk swelling and retinal hemorrhages, which are not typical for TB uveitis. TB usually causes choroiditis or vasculitis, but not necessarily optic-disk swelling.
+
+Sarcoidosis can cause uveitis with optic-disk involvement and lymphadenopathy. But sarcoidosis is less common in children.
+
+Another possibility is lymphoma, given the lymphadenopathy, but that's rare in children and usually presents with other symptoms.
+
+Wait, actually, in children, the most common cause of uveitis is juvenile idiopathic arthritis, but she has no joint symptoms.
+
+Also, she has iris nodules, which can be seen in granulomatous uveitis, like in TB or sarcoidosis.
+
+But let's look at the lab results. In Table 1, which isn't shown here, but presumably, it includes inflammatory markers or other tests.
+
+Wait, the case mentions "Other laboratory test results are shown in Table 1." Since we don't have Table 1, we have to assume that those results are not diagnostic.
+
+Importantly, she was started on steroids and antitubercular therapy, and she's being evaluated in rheumatology.
+
+Given that, the final diagnosis is likely tuberculosis, given her history and the empirical treatment started.
+
+But wait, the interferon-gamma release assay was indeterminate, and the previous positive one might have been treated, but it's unclear.
+
+Alternatively, since she's being evaluated in rheumatology, they might be considering other systemic inflammatory conditions.
+
+Wait, another thought: she has bilateral uveitis with optic-disk swelling and retinal hemorrhages, which could be due to hypertension. Wait, her blood pressure was 96/61, which is normal.
+
+Wait, actually, in the initial evaluation, her blood pressure was not measured, but later it was 96/61, which is normal for an 11-year-old.
+
+So, not hypertension.
+
+Another possibility is neuroretinitis, but that's usually unilateral.
+
+Wait, she has bilateral involvement.
+
+Also, she has lymphadenopathy, which suggests a systemic process.
+
+Given that, and her origin from West Africa, tuberculosis is still a strong possibility.
+
+Alternatively, sarcoidosis, but again, less common in children.
+
+Wait, actually, upon second thought, in children, sarcoidosis can present with uveitis and lymphadenopathy.
+
+But typically, sarcoidosis in children is rare and often involves other organs.
+
+Another condition to consider is lymphoma, but again, rare in children and usually has other symptoms.
+
+Wait, actually, in this case, she has no fever, weight loss, or night sweats, which are typical for lymphoma.
+
+So, less likely.
+
+Another possibility is cat-scratch disease, but that usually causes unilateral lymphadenopathy and fever.
+
+She has no fever, and the lymphadenopathy is diffuse.
+
+So, not fitting.
+
+Also, she has no history of cat exposure mentioned.
+
+Wait, the case doesn't mention any animal exposure.
+
+Another condition is syphilis, but her test was negative.
+
+Similarly, HIV and Lyme disease were negative.
+
+So, back to tuberculosis or sarcoidosis.
+
+Now, in tuberculosis, ocular involvement can include uveitis, but optic-disk swelling is less common.
+
+In sarcoidosis, optic nerve involvement can occur, including optic-disk swelling.
+
+Moreover, sarcoidosis can cause hilar lymphadenopathy, which was seen on chest CT.
+
+Wait, actually, the chest CT showed hilar fullness and diffuse lymphadenopathy, which is classic for sarcoidosis.
+
+In tuberculosis, it's usually unilateral hilar adenopathy or parenchymal involvement.
+
+But in this case, it's diffuse lymphadenopathy, which is more suggestive of sarcoidosis or lymphoma.
+
+Given that, and the eye findings, sarcoidosis seems plausible.
+
+Additionally, in children, sarcoidosis can present differently than in adults, sometimes with uveitis and arthritis, but she has no joint symptoms.
+
+Wait, actually, there's a form called early-onset sarcoidosis, which occurs in children under 5, with rash, uveitis, and arthritis, but she's 11, so not that.
+
+In older children, sarcoidosis can mimic adult sarcoidosis.
+
+So, it's possible.
+
+Moreover, the indeterminate interferon-gamma release assay doesn't rule out TB, but it's not confirmatory either.
+
+Also, the empirical treatment for TB was started, but that might be precautionary.
+
+Now, to confirm sarcoidosis, typically, a biopsy is needed, showing noncaseating granulomas.
+
+In this case, since she has accessible lymph nodes, a biopsy could be done.
+
+But the case doesn't mention a biopsy, so perhaps it's not done yet.
+
+Alternatively, since she's being evaluated in rheumatology, they might be considering other tests.
+
+Wait, actually, the case says "additional tests were performed," but doesn't specify.
+
+However, for the final diagnosis, we need to consider what's most likely based on the information given.
+
+Given that, I think the clinical diagnosis is uveitis, and the final diagnosis is sarcoidosis.
+
+Wait, but let's see if there's anything else.
+
+Another condition is Vogt-Koyanagi-Harada syndrome, which can cause bilateral uveitis with optic-disk swelling, but it's rare and usually associated with vitiligo, alopecia, or hearing loss, which she doesn't have.
+
+Also, it's more common in certain ethnic groups, like Asians and Native Americans, not typically in Africans.
+
+So, less likely.
+
+Another possibility is Behçet's disease, but that usually causes oral and genital ulcers, which she doesn't have.
+
+Moreover, it's less common in children.
+
+So, not fitting.
+
+Therefore, between tuberculosis and sarcoidosis, I think sarcoidosis is more likely, given the bilateral hilar lymphadenopathy and the eye findings.
+
+Wait, actually, upon re-reading, the chest CT showed "diffuse lymphadenopathy in the mediastinum, upper abdomen, and axillae," which is not specific to hilar lymph nodes.
+
+In sarcoidosis, it's typically bilateral hilar and paratracheal lymph nodes.
+
+But diffuse lymphadenopathy can also occur in sarcoidosis.
+
+In tuberculosis, lymph node involvement is usually cervical or unilateral hilar.
+
+So, diffuse lymphadenopathy might favor sarcoidosis or lymphoma.
+
+But again, lymphoma is less likely without other symptoms.
+
+Additionally, in sarcoidosis, the thymus can be enlarged, but in this case, it was normal.
+
+However, that's not always present.
+
+Also, she has no pulmonary parenchymal involvement mentioned, which is common in sarcoidosis, but not always present.
+
+So, overall, I think sarcoidosis is the most likely diagnosis.
+
+Therefore, the clinical diagnosis is uveitis, and the final diagnosis is sarcoidosis.
+
+Wait, but to be precise, the clinical diagnosis should be based on initial presentation.
+
+Actually, the clinical diagnosis is the initial diagnosis before all tests, so based on symptoms and initial tests, it would be uveitis.
+
+Then, after further tests, including imaging and lab results, the final diagnosis is sarcoidosis.
+
+Alternatively, since the case mentions that she was started on antitubercular therapy, perhaps the final diagnosis is tuberculosis.
+
+But I think that's empirical treatment, and the actual diagnosis might be different.
+
+Wait, the case says "as empirical treatment for possible tuberculosis," so it's not confirmed.
+
+Moreover, in the rheumatology clinic, they're evaluating her, so perhaps they're considering other diagnoses.
+
+But based on the information given, I think sarcoidosis is more likely.
+
+Alternatively, maybe it's lymphoma, but that seems less likely.
+
+Wait, another thought: she has retinal hemorrhages and cotton-wool spots, which can be seen in leukemia or lymphoma, but again, she has no other symptoms.
+
+Moreover, in children, acute lymphoblastic leukemia is common, but usually presents with other signs like pallor, bruising, or bone pain.
+
+She has none of those.
+
+So, less likely.
+
+Therefore, I stick with sarcoidosis.
+
+So, to summarize:
+
+Clinical Diagnosis: Uveitis
+Final Diagnosis: Sarcoidosis

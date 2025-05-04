@@ -1,0 +1,473 @@
+So I've got this case here, and I need to figure out both the clinical diagnosis and the final diagnosis based on the information provided. Let's start by understanding what each of these terms means.
+
+The clinical diagnosis is the initial diagnosis made based on the patient's symptoms, medical history, physical examination, and preliminary test results. So, I need to look for keywords related to symptoms, medical history, and initial test results.
+
+The final diagnosis, on the other hand, is the definitive diagnosis after all diagnostic tests, imaging, biopsies, and specialist consultations have been completed. For this, I should look for keywords related to biopsy results, advanced imaging findings, molecular profiling, and response to initial treatments.
+
+Alright, let's dive into the case.
+
+First, the patient is a 53-year-old woman who presented with progressive headache, gait instability, and weight loss. She also had vertigo that resolved spontaneously, and later, she had recurrent dizziness and difficulty walking.
+
+On examination at another hospital, she had slow speech, bilateral end-point horizontal nystagmus, mild dysmetria on the right side, and difficulty maintaining a stable stance with a narrow-based, slow, and cautious gait.
+
+CT of the head showed an area of ill-defined hypoattenuation in the right cerebellar hemisphere, consistent with vasogenic edema, and regions of white-matter hypoattenuation in both cerebellar hemispheres.
+
+Then, MRI of the head revealed an enhancing intraaxial lesion in the right inferior cerebellar hemisphere with internal signal hypointensity indicative of necrosis on T1-weighted imaging and surrounding signal hyperintensity suggestive of vasogenic edema on T2-weighted imaging. There was also an enhancing leptomeningeal lesion along the left medial frontal lobe.
+
+So, based on these initial findings, what could be the clinical diagnosis?
+
+Well, the symptoms and imaging suggest a space-occupying lesion in the cerebellum, possibly a tumor, given the presence of enhancement and necrosis. The leptomeningeal lesion also raises suspicion for metastatic disease or possibly an infectious process.
+
+But wait, the patient also has a history of unintentional weight loss of 15 kg over the past year, which could be a sign of malignancy or a chronic infection.
+
+Additionally, she has a history of hypertension and a hemorrhagic stroke 13 years ago, but that seems less relevant to the current presentation.
+
+Interestingly, there's a confusing history regarding HIV. She was told she had HIV and was treated with ART, but later it was found to be an error, and she doesn't have HIV. However, on current testing, an HIV screening test was reactive, but plasma HIV-1 RNA was not detected, and her CD4+ T-cell count was very low at 39 per microliter.
+
+Wait, that's odd. If she doesn't have HIV, why is the screening test reactive, and why is her CD4 count so low?
+
+Actually, the screening test detects antibodies to HIV-1 and HIV-2 and HIV-1 p24 antigen. If it's reactive but HIV-1 RNA is not detected, it could be a false positive, or perhaps she has HIV-2, which isn't detected by the HIV-1 RNA test. But the case doesn't specify testing for HIV-2 RNA.
+
+Alternatively, maybe she has advanced HIV with a low viral load due to previous treatment, but that doesn't make sense because she was told she didn't have HIV and stopped ART.
+
+Wait, actually, the case says: "she reported that, several years later, further testing revealed that an error had been made and she did not have HIV infection. She reported that ART medications were discontinued at least 3 years before the current evaluation."
+
+But now, the HIV screening test is reactive, and CD4 count is low. So, perhaps the initial diagnosis was correct, and the later testing was wrong, or maybe there's something else going on.
+
+Anyway, for the clinical diagnosis, I think the main concern is the cerebellar lesion, which could be a tumor or possibly an infectious process, especially given the low CD4 count, which suggests immunosuppression.
+
+Wait, but if she doesn't have HIV, why is her CD4 count low? Maybe she has another cause of immunosuppression.
+
+Alternatively, perhaps she does have HIV, and the viral load is undetectable due to previous treatment, but that seems unlikely if she stopped ART years ago.
+
+Wait, actually, if she was on ART and then stopped, the viral load could rebound, but in this case, it's not detected, which is confusing.
+
+Alternatively, maybe the HIV test is a false positive, and she has another condition causing low CD4 count.
+
+But for now, let's focus on the clinical diagnosis based on the presenting symptoms and initial imaging.
+
+So, the patient has a cerebellar lesion with enhancement and necrosis, suggesting a possible malignancy, such as a primary brain tumor or metastasis. The leptomeningeal lesion also suggests possible metastatic disease or an infectious process like tuberculosis or fungal infection, especially in an immunocompromised host.
+
+Given that she has oral thrush, which is often seen in immunocompromised individuals, and her CD4 count is low, it's reasonable to consider opportunistic infections.
+
+So, possible clinical diagnoses could include:
+
+1.  Cerebellar tumor (primary or metastatic)
+2.  CNS infection (e.g., tuberculosis, fungal infection, toxoplasmosis)
+3.  Other inflammatory or demyelinating processes, but less likely given the imaging findings.
+
+Wait, actually, the imaging shows an enhancing lesion with necrosis, which is more typical for a tumor or abscess rather than demyelination.
+
+Also, the patient has weight loss, which could be due to malignancy or chronic infection.
+
+Additionally, CT of the chest showed scattered pulmonary nodules, which could be metastatic or infectious.
+
+CT of the abdomen and pelvis showed a hepatic lesion consistent with hemangioma and diffuse lytic osseous lesions in the thoracolumbar spine and pelvis, which are concerning for metastatic disease.
+
+So, the presence of multiple lesions in different organs suggests a systemic process, likely metastatic cancer.
+
+But wait, the pulmonary nodules are less than 4 mm, which might be too small to characterize, and the hepatic lesion is described as consistent with hemangioma, which is benign.
+
+However, the diffuse lytic osseous lesions are worrisome for metastasis.
+
+So, perhaps the clinical diagnosis is metastatic cancer with an unknown primary, involving the brain, possibly the bones, and maybe the lungs.
+
+Alternatively, it could be a primary brain tumor with systemic manifestations, but that seems less likely.
+
+Wait, actually, primary brain tumors like glioblastoma can have leptomeningeal spread, but systemic metastasis is rare.
+
+Moreover, the presence of lytic bone lesions suggests a systemic malignancy that has metastasized to the brain and bones.
+
+Common cancers that metastasize to the brain and bones include breast, lung, melanoma, etc.
+
+But the patient had a normal mammogram recently, which reduces the likelihood of breast cancer, though not impossible.
+
+She hasn't had a colonoscopy or Pap test, so colorectal or cervical cancer are possible, but less likely to present with brain and bone metastases as the initial manifestation.
+
+Alternatively, perhaps it's a hematologic malignancy like lymphoma, which can involve the CNS and bones.
+
+Wait, and lymphoma can occur in immunocompromised individuals, such as those with HIV.
+
+Speaking of which, let's clarify the HIV status.
+
+The HIV screening test was reactive, but HIV-1 RNA was not detected. However, the CD4 count is very low, and she has oral thrush, suggesting immunosuppression.
+
+In HIV, if the patient is on effective ART, the viral load can be undetectable, but in this case, she reportedly stopped ART years ago.
+
+Alternatively, perhaps she has HIV-2, which is less common but possible, especially since she's from West Africa, where HIV-2 is more prevalent.
+
+HIV-2 viral load testing might not have been done, and the screening test could detect HIV-2 antibodies.
+
+Moreover, HIV-2 can cause immunosuppression similar to HIV-1.
+
+So, it's possible that she has HIV-2 infection, leading to immunosuppression and predisposing her to opportunistic infections or certain malignancies.
+
+Alternatively, maybe she has HIV-1 with a low viral load for some reason, or perhaps the test results are inconclusive.
+
+But for the purpose of diagnosis, I think we have to consider that she is immunocompromised, given the low CD4 count and oral thrush.
+
+Therefore, the differential diagnosis for the cerebellar lesion includes:
+
+1.  Primary CNS lymphoma, which is common in HIV patients with low CD4 counts.
+2.  Toxoplasmosis, which is another common CNS infection in HIV patients.
+3.  Tuberculosis, which can cause tuberculomas in the brain.
+4.  Fungal infections like cryptococcosis or histoplasmosis.
+5.  Progressive multifocal leukoencephalopathy (PML), but that typically presents with white matter lesions without enhancement.
+
+Wait, in this case, the lesion is enhancing with necrosis, which is more consistent with lymphoma, toxoplasmosis, or abscess.
+
+PML usually doesn't enhance.
+
+Also, the patient has a leptomeningeal lesion, which could be seen in lymphoma or infections like tuberculosis or cryptococcosis.
+
+Moreover, the lytic bone lesions could be due to lymphoma or other malignancies, or possibly mycobacterial or fungal infections.
+
+But in HIV patients, primary CNS lymphoma and toxoplasmosis are high on the differential for enhancing brain lesions.
+
+So, perhaps the clinical diagnosis is CNS lesion in an immunocompromised host, with differential including primary CNS lymphoma and toxoplasmosis.
+
+Wait, but the patient also has systemic findings like pulmonary nodules and lytic bone lesions, which might not be explained by toxoplasmosis alone.
+
+Primary CNS lymphoma typically involves only the CNS, but systemic lymphoma can involve multiple sites.
+
+Alternatively, maybe it's metastatic cancer, but in an HIV patient with low CD4, opportunistic infections and AIDS-defining illnesses are more likely.
+
+Wait, actually, both can occur, but given the context, I think the clinical diagnosis would lean towards an AIDS-related condition.
+
+Let me check the criteria again.
+
+For the clinical diagnosis, it's based on initial presentation and preliminary tests.
+
+So, at this point, before further testing, the clinical diagnosis might be:
+
+*   Suspected CNS malignancy or infection in a patient with possible HIV infection and immunosuppression.
+
+But I need to be more specific.
+
+Alternatively, perhaps it's "Cerebellar mass with leptomeningeal enhancement and systemic lesions in a patient with low CD4 count."
+
+But that's descriptive rather than a diagnosis.
+
+In medical practice, the clinical diagnosis often includes a differential diagnosis.
+
+However, for this exercise, I think they expect a concise term.
+
+Looking back at the case, after the initial evaluation, the patient was admitted for further evaluation and treatment.
+
+Then, additional tests were done, including HIV testing, CD4 count, and CT of chest, abdomen, and pelvis.
+
+So, perhaps the clinical diagnosis is based on the initial presentation and MRI findings, while the final diagnosis incorporates all the test results.
+
+Wait, but actually, the case presentation seems to include all the information up to the point of admission and initial tests.
+
+But to clarify, let's see what happens next.
+
+Wait, the case ends with "The patient was admitted to the hospital for further evaluation and treatment." and then lists some test results, but it doesn't provide the outcome or the final diagnosis.
+
+Wait, actually, in the original text, it probably continues, but in this excerpt, it stops there.
+
+However, for the purpose of this exercise, I think we are supposed to infer the diagnoses based on the provided information.
+
+So, let's try to identify the clinical diagnosis first.
+
+The clinical diagnosis would be based on the symptoms, history, and initial imaging.
+
+So, symptoms: headache, gait instability, weight loss, vertigo, dizziness.
+
+History: hypertension, previous hemorrhagic stroke, confusing HIV history.
+
+Initial imaging: CT and MRI showing a cerebellar lesion with enhancement and necrosis, and a leptomeningeal lesion.
+
+So, a possible clinical diagnosis could be "Cerebellar tumor" or "Brain mass," but that's too vague.
+
+Alternatively, given the enhancement and necrosis, "Suspected brain malignancy" or "Suspected brain abscess."
+
+But in the context of the low CD4 count and oral thrush, which were found later, but actually, the HIV test and CD4 count were done after admission, so perhaps for the clinical diagnosis, we consider only the information before those tests.
+
+Wait, let's see the sequence.
+
+The patient was transferred to this hospital, and on evaluation, they took a history, did a physical exam, and then admitted her.
+
+Then, they did lab tests, including HIV screening, CD4 count, and CT of chest, abdomen, and pelvis.
+
+So, perhaps the clinical diagnosis is made before these additional tests, based on the initial presentation and MRI.
+
+In that case, the clinical diagnosis might be "Cerebellar mass, likely neoplastic or infectious."
+
+But I think in practice, the clinical diagnosis would include the suspicion based on all available information at the time of initial evaluation.
+
+Alternatively, perhaps the clinical diagnosis is "Cerebellar lesion with leptomeningeal involvement, differential includes malignancy or infection."
+
+But for this exercise, I need to provide a concise term.
+
+Looking at similar cases, often the clinical diagnosis is something like "Brain tumor" or "Cerebellar abscess," but here, given the complexity, maybe "Suspected metastatic disease" or "Suspected CNS infection in immunocompromised host."
+
+Wait, but at the time of initial presentation, they didn't know about the HIV status.
+
+Actually, the HIV test was done after admission, but the patient had a history of being told she had HIV and then not, so perhaps they suspected immunosuppression.
+
+Moreover, she had oral thrush on exam, which is a clue to immunosuppression.
+
+So, perhaps the clinical diagnosis is "Cerebellar mass in a patient with suspected immunosuppression, differential includes lymphoma, toxoplasmosis, etc."
+
+But that's a bit long.
+
+Alternatively, maybe it's "Cerebellar lesion, likely infectious or malignant, in the setting of possible HIV infection."
+
+Still, I need to find a way to condense it.
+
+Let me see if there's a standard way to phrase it.
+
+Upon second thought, perhaps the clinical diagnosis is simply "Brain mass" or "Cerebellar tumor," and the final diagnosis is more specific.
+
+But that seems too simplistic.
+
+Wait, let's look for clues in the case title: "A 53-Year-Old Woman with Headache and Gait Imbalance."
+
+So, the presenting symptoms are headache and gait imbalance, which are consistent with a cerebellar lesion.
+
+Then, the imaging confirms a cerebellar mass.
+
+So, perhaps the clinical diagnosis is "Cerebellar mass lesion."
+
+But I think they expect something more specific.
+
+Alternatively, maybe it's "Suspected brain metastasis" given the weight loss and possible systemic involvement.
+
+But the initial CT and MRI didn't show multiple lesions, just the cerebellar lesion and a small leptomeningeal lesion.
+
+Wait, actually, the MRI showed an enhancing intraaxial lesion in the cerebellum and an enhancing leptomeningeal lesion in the frontal lobe, so there are at least two lesions, suggesting possible metastatic disease or multifocal infection.
+
+So, "Multiple brain lesions, likely metastatic or infectious."
+
+But again, that's not very specific.
+
+Let's move on to the final diagnosis.
+
+For the final diagnosis, I need to consider all the test results provided.
+
+So, after admission, they found:
+
+*   Reactive HIV screening test, but HIV-1 RNA not detected.
+*   CD4+ T-cell count of 39 per microliter.
+*   Oral thrush.
+*   CT chest: mildly enlarged and multinodular left thyroid gland, scattered pulmonary nodules <4 mm.
+*   CT abdomen/pelvis: hepatic hemangioma, diffuse lytic osseous lesions in thoracolumbar spine and pelvis.
+
+So, the key findings are:
+
+*   Low CD4 count and oral thrush, indicating immunosuppression.
+*   Reactive HIV test but no detectable HIV-1 RNA, which is confusing.
+*   Multiple lytic bone lesions, which are concerning for malignancy.
+*   Brain lesions: cerebellar mass and frontal leptomeningeal lesion.
+*   Pulmonary nodules, which could be infectious or metastatic.
+
+Given this, what could be the unifying diagnosis?
+
+One possibility is that she has HIV infection, despite the undetectable HIV-1 RNA, perhaps HIV-2 or some other issue with the testing.
+
+With HIV and low CD4, the brain lesions could be due to primary CNS lymphoma or opportunistic infections like toxoplasmosis.
+
+However, primary CNS lymphoma typically presents with brain lesions, but not usually with lytic bone lesions.
+
+Wait, actually, systemic lymphoma can involve bones and brain.
+
+Alternatively, perhaps she has metastatic cancer from another primary site.
+
+But what primary cancer would cause brain metastases and lytic bone lesions in a 53-year-old woman?
+
+Possibilities include breast cancer, lung cancer, melanoma, etc.
+
+But her mammogram was normal, and there's no mention of skin lesions or other symptoms.
+
+Another possibility is multiple myeloma, which can cause lytic bone lesions, but CNS involvement is rare in multiple myeloma.
+
+Moreover, multiple myeloma typically presents with hypercalcemia, renal failure, anemia, etc., which are not mentioned here.
+
+Wait, actually, the case says "Results of tests of renal, liver, and thyroid function were normal, as were blood levels of electrolytes, vitamin B12, and glycated hemoglobin," so no mention of calcium or other abnormalities.
+
+So, perhaps not multiple myeloma.
+
+Alternatively, maybe it's a lymphoma with CNS and bone involvement.
+
+In HIV patients, aggressive lymphomas like diffuse large B-cell lymphoma can occur and involve multiple sites.
+
+Moreover, primary CNS lymphoma is an AIDS-defining illness, but it usually stays within the CNS.
+
+However, in some cases, systemic lymphoma can involve the CNS.
+
+So, perhaps the final diagnosis is lymphoma, possibly related to HIV infection.
+
+Another possibility is tuberculosis, which can cause brain tuberculomas, pulmonary nodules, and lytic bone lesions.
+
+In HIV patients, TB is common, and it can be disseminated.
+
+Similarly, fungal infections like cryptococcosis can involve the CNS and bones, but lytic bone lesions are less typical.
+
+Also, toxoplasmosis usually involves the brain but not the bones.
+
+So, between lymphoma and TB, both are possible.
+
+But let's see if there's more information.
+
+Wait, the case mentions that a urine sample was obtained for culture, but no results are provided.
+
+Also, there's no mention of biopsy or further testing in this excerpt.
+
+However, based on the provided information, I think the most likely final diagnosis is lymphoma, possibly HIV-related.
+
+Alternatively, it could be metastatic cancer, but the primary site is not clear.
+
+Wait, another thought: the patient has a multinodular thyroid gland, and thyroid cancer can metastasize to bones and brain, but thyroid cancer metastases are usually osteoblastic, not lytic, and brain metastases are less common.
+
+Moreover, the pulmonary nodules could be from thyroid cancer, but again, it's not the most typical presentation.
+
+So, I think lymphoma is a more likely diagnosis.
+
+Therefore, for the clinical diagnosis, I would say "Cerebellar mass," and for the final diagnosis, "Lymphoma."
+
+But let's see if I can be more specific.
+
+Actually, in medical cases, the clinical diagnosis is often the initial impression, and the final diagnosis is confirmed by pathology or other definitive tests.
+
+In this case, since no biopsy results are provided, I have to infer based on the clinical picture.
+
+Alternatively, perhaps the final diagnosis is "HIV-associated primary CNS lymphoma" or something similar.
+
+Wait, but primary CNS lymphoma typically doesn't involve systemic sites, whereas here there are lytic bone lesions, suggesting systemic involvement.
+
+So, maybe it's "HIV-associated systemic lymphoma with CNS involvement."
+
+Alternatively, if it's not HIV, perhaps it's just "Lymphoma with CNS and bone involvement."
+
+But given the low CD4 count and oral thrush, it's likely related to immunosuppression, probably from HIV.
+
+Wait, another point: the patient is from Ivory Coast, West Africa, where HIV-2 is more prevalent, and HIV-2 can cause similar immunosuppression.
+
+Since the HIV-1 RNA was not detected, perhaps she has HIV-2 infection.
+
+In that case, the diagnosis could be "Lymphoma in a patient with HIV-2 infection."
+
+But I think for the purpose of this exercise, "Lymphoma" might be sufficient.
+
+Alternatively, let's consider if there's another possibility.
+
+For example, could it be breast cancer with metastasis? But the mammogram was normal, and breast cancer usually causes osteolytic or mixed bone lesions, but the brain lesion and leptomeningeal involvement would be possible.
+
+However, in an HIV patient with low CD4, lymphoma is more likely.
+
+Similarly, lung cancer could present with brain and bone metastases, but there's no mention of a lung mass, only small pulmonary nodules, which could be granulomas or early metastases.
+
+But again, in the context of HIV, lymphoma is a stronger possibility.
+
+Moreover, the patient's age and the rapid weight loss also fit with lymphoma.
+
+So, I think the final diagnosis is lymphoma.
+
+Therefore, to summarize:
+
+*   Clinical Diagnosis: Cerebellar mass
+*   Final Diagnosis: Lymphoma
+
+Wait, but is "Cerebellar mass" too vague for the clinical diagnosis?
+
+Perhaps it's better to say "Suspected brain tumor" or "Suspected CNS malignancy."
+
+But in the context of the case, since they were considering both malignancy and infection, maybe "Cerebellar lesion" is acceptable.
+
+Alternatively, looking at the case title, it's "A 53-Year-Old Woman with Headache and Gait Imbalance," and the differential diagnosis is discussed, but for this exercise, I need to provide concise terms.
+
+Upon reflection, I think "Brain mass" or "Cerebellar tumor" is a reasonable clinical diagnosis, and "Lymphoma" is the final diagnosis.
+
+But let's confirm if there's a better way to phrase it.
+
+Wait, another idea: perhaps the clinical diagnosis is "Metastatic disease," given the multiple lesions, and the final diagnosis specifies the type of cancer.
+
+But since I believe it's lymphoma, which is not typically considered metastatic in the same way as carcinoma, maybe "Lymphoma with CNS involvement" is more accurate.
+
+However, in medical terminology, lymphoma is often staged rather than called metastatic.
+
+But for simplicity, I think "Lymphoma" is fine.
+
+So, I'll go with:
+
+*   Clinical Diagnosis: Cerebellar mass
+*   Final Diagnosis: Lymphoma
+
+Wait, but to make it more precise, perhaps the clinical diagnosis is "Suspected brain metastasis or primary brain tumor," but that's wordy.
+
+Alternatively, maybe it's "Cerebellar lesion with suspected systemic involvement."
+
+But I think "Cerebellar mass" is acceptable.
+
+Alternatively, let's see what the actual answer might be.
+
+Upon second thought, in many case reports, the clinical diagnosis is the presenting problem, like "Headache and gait imbalance," but I think they expect a medical diagnosis.
+
+Wait, no, in the instruction, it says "identify the clinical diagnosis," which is the initial diagnosis based on symptoms, history, etc.
+
+So, perhaps it's "Cerebellar syndrome due to mass lesion."
+
+But I think "Cerebellar mass" is sufficient.
+
+For the final diagnosis, since the case doesn't provide the definitive test results, I have to infer based on the available data.
+
+Alternatively, maybe the final diagnosis is "HIV-associated CNS lymphoma," but since the HIV status is ambiguous, perhaps it's just "Lymphoma."
+
+Wait, actually, upon re-reading, the HIV screening test was reactive, and despite the history, it's likely that she does have HIV, given the low CD4 count and oral thrush.
+
+So, probably, the final diagnosis is "Primary CNS lymphoma in HIV infection" or something similar.
+
+But since there are systemic lesions, it might be systemic lymphoma.
+
+However, in HIV patients, primary CNS lymphoma is a specific entity, and it's possible to have both CNS and systemic involvement.
+
+But typically, primary CNS lymphoma is confined to the CNS.
+
+Given that, and the presence of lytic bone lesions, perhaps it's systemic lymphoma with CNS involvement.
+
+But in the context of HIV, it's still considered an AIDS-defining illness.
+
+So, I think "Lymphoma" is a reasonable final diagnosis.
+
+Alternatively, perhaps it's "Disseminated tuberculosis," but the brain lesion description sounds more like a tumor than a tuberculoma, although tuberculomas can mimic tumors.
+
+However, the presence of necrosis and enhancement is consistent with both.
+
+But given the multiple sites, it's possible.
+
+Yet, I think lymphoma is more likely.
+
+Another way to think about it is that in HIV patients with CD4 <50, the most common CNS masses are toxoplasmosis and primary CNS lymphoma.
+
+Toxoplasmosis often presents with multiple ring-enhancing lesions, whereas lymphoma can present with single or multiple lesions.
+
+In this case, there are two lesions mentioned, so both are possible.
+
+However, toxoplasmosis typically doesn't cause lytic bone lesions, whereas lymphoma can.
+
+So, that points more towards lymphoma.
+
+Additionally, the patient has weight loss, which can be seen in both, but lymphoma often causes B symptoms like weight loss.
+
+Therefore, I believe the final diagnosis is lymphoma.
+
+So, to conclude:
+
+*   Clinical Diagnosis: Cerebellar mass
+*   Final Diagnosis: Lymphoma
+
+Wait, but let's see if there's a standard format.
+
+Upon checking similar cases, often the clinical diagnosis is something like "Brain tumor," and the final diagnosis is the specific type, like "Glioblastoma" or "Metastatic breast cancer."
+
+In this case, since it's likely lymphoma, I'll stick with that.
+
+Alternatively, perhaps the final diagnosis is "HIV-associated lymphoma."
+
+But since the instruction says "in very few words," I think "Lymphoma" is sufficient.
+
+So, my answer is:
+
+Clinical Diagnosis: Cerebellar mass  
+Final Diagnosis: Lymphoma
