@@ -14,6 +14,7 @@ import statistics
 import numpy as np
 
 import os
+from config import samples
 
 
 class RNN(nn.Module):
@@ -97,11 +98,11 @@ def evaluate(model, dataloader, part, gpu_id=None):
     """
     model: Pytorch model
     X (batch_size, 1000, 3) : batch of examples
-    y (batch_size,4): ground truth labels_train
+    y (batch_size, 5): ground truth labels_train
     """
     model.eval()
     with torch.no_grad():
-        matrix = np.zeros((4, 4))
+        matrix = np.zeros((5, 5))
         for i, (x_batch, y_batch) in enumerate(dataloader):
             print('eval {} of {}'.format(i + 1, len(dataloader)), end='\r')
             x_batch, y_batch = x_batch.to(gpu_id), y_batch.to(gpu_id)
@@ -165,8 +166,6 @@ def main():
     configure_seed(seed=42)
     configure_device(opt.gpu_id)
 
-    # samples = [17111,2156,2163]
-    samples = [2844,357,362]
     print("Loading data...")  # input manual nexamples train, dev e test
     train_dataset = Dataset_for_RNN(opt.data, samples, 'train')
     dev_dataset = Dataset_for_RNN(opt.data, samples, 'dev')
@@ -250,23 +249,35 @@ def main():
 
     # Results on test set:
     matrix = evaluate(model, test_dataloader, 'test', gpu_id=opt.gpu_id)
-    MI_sensi = matrix[0, 0] / (matrix[0, 0] + matrix[0, 1])
-    MI_spec = matrix[0, 3] / (matrix[0, 3] + matrix[0, 2])
-    STTC_sensi = matrix[1, 0] / (matrix[1, 0] + matrix[1, 1])
-    STTC_spec = matrix[1, 3] / (matrix[1, 3] + matrix[1, 2])
-    CD_sensi = matrix[2, 0] / (matrix[2, 0] + matrix[2, 1])
-    CD_spec = matrix[2, 3] / (matrix[2, 3] + matrix[2, 2])
-    HYP_sensi = matrix[3, 0] / (matrix[3, 0] + matrix[3, 1])
-    HYP_spec = matrix[3, 3] / (matrix[3, 3] + matrix[3, 2])
-    mean_sensi = np.mean(matrix[:, 0]) / (np.mean(matrix[:, 0]) + np.mean(matrix[:, 1]))
-    mean_spec = np.mean(matrix[:, 3]) / (np.mean(matrix[:, 3]) + np.mean(matrix[:, 2]))
-    file = open('results_aut.txt', 'w')
-    print('Final Test Results: \n ' + str(matrix) + '\n' + 'MI: sensitivity - ' + str(MI_sensi) + '; specificity - '
-          + str(MI_spec) + '\n' + 'STTC: sensitivity - ' + str(STTC_sensi) + '; specificity - ' + str(STTC_spec)
-          + '\n' + 'CD: sensitivity - ' + str(CD_sensi) + '; specificity - ' + str(CD_spec)
-          + '\n' + 'HYP: sensitivity - ' + str(HYP_sensi) + '; specificity - ' + str(HYP_spec)
-          + '\n' + 'mean: sensitivity - ' + str(mean_sensi) + '; specificity - ' + str(mean_spec), file=file)
-    file.close()
+    classes = ["NORM", "AFIB", "AFLT", "1dAVb", "RBBB"]
+    sensitivities = []
+    specificities = []
+
+    # Compute sensitivity and specificity for each class
+    for i in range(len(classes)):
+        tp, fp, fn, tn = matrix[i]
+        sensi = tp / (tp + fn)
+        spec = tn / (tn + fp)
+        sensitivities.append(sensi)
+        specificities.append(spec)
+
+    # Compute mean sensitivity and specificity
+    mean_sensi = np.mean(matrix[:, 0]) / (np.mean(matrix[:, 0]) + np.mean(matrix[:, 2]))
+    mean_spec = np.mean(matrix[:, 3]) / (np.mean(matrix[:, 3]) + np.mean(matrix[:, 1]))
+
+    # Print results
+    print("Final Test Results:")
+    for i, cls in enumerate(classes):
+        print(f"{cls}: sensitivity - {sensitivities[i]:.2f}; specificity - {specificities[i]:.2f}")
+    print(f"mean: sensitivity - {mean_sensi:.2f}; specificity - {mean_spec:.2f}")
+
+    # Save to file
+    with open(f'results/model/{model.__class__.__name__}.txt', 'w') as f:
+        f.write("Final Test Results:\n")
+        for i, cls in enumerate(classes):
+            f.write(f"{cls}: sensitivity - {sensitivities[i]:.2f}; specificity - {specificities[i]:.2f}\n")
+        f.write(f"mean: sensitivity - {mean_sensi:.2f}; specificity - {mean_spec:.2f}\n")
+
     # plot
     plot(epochs, train_mean_losses, ylabel='Loss', name='training-loss-{}-{}'.format(opt.learning_rate, opt.optimizer))
     plot(epochs, valid_specificity, ylabel='Specificity',

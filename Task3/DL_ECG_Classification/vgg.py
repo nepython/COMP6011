@@ -15,6 +15,7 @@ from sklearn.metrics import roc_curve
 import os
 
 from torch.nn import functional as F
+from config import samples
 
 #based on https://medium.com/@tioluwaniaremu/vgg-16-a-simple-implementation-using-pytorch-7850be4d14a1 (visited on May 22, 2022)
 class VGG16(nn.Module):
@@ -81,7 +82,7 @@ class VGG16(nn.Module):
 def train_batch(X, y, model, optimizer, criterion, gpu_id=None, **kwargs):
     """
     X (batch_size, 9, 1000, 1000): batch of examples
-    y (batch_size, 4): ground truth labels
+    y (batch_size, 5): ground truth labels
     model: Pytorch model
     optimizer: optimizer for the gradient step
     criterion: loss function
@@ -108,11 +109,11 @@ def evaluate1(model,dataloader, part, gpu_id=None):
     """
     model: Pytorch model
     X (batch_size, 9, 1000, 1000) : batch of examples
-    y (batch_size,4): ground truth labels
+    y (batch_size,5): ground truth labels
     """
     model.eval()
     with torch.no_grad():
-        matrix = np.zeros((4,4))
+        matrix = np.zeros((5,5))
         for i, (x_batch, y_batch) in enumerate(dataloader):
             print('eval {} of {}'.format(i + 1, len(dataloader)), end='\r')
             x_batch, y_batch = x_batch.to(gpu_id), y_batch.to(gpu_id)
@@ -206,11 +207,11 @@ def evaluate(model, dataloader, thr, gpu_id=None):
     """
     model: Pytorch model
     X (batch_size, 1000, 3) : batch of examples
-    y (batch_size,4): ground truth labels_train
+    y (batch_size, 5): ground truth labels_train
     """
     model.eval()  # set dropout and batch normalization layers to evaluation mode
     with torch.no_grad():
-        matrix = np.zeros((4, 4))
+        matrix = np.zeros((5, 5))
         for i, (x_batch, y_batch) in enumerate(dataloader):
             print('eval {} of {}'.format(i + 1, len(dataloader)), end='\r')
             x_batch, y_batch = x_batch.to(gpu_id), y_batch.to(gpu_id)
@@ -246,12 +247,10 @@ def main():
     configure_seed(seed=42)
     configure_device(opt.gpu_id)
 
-    _examples_ = [17111,2156,2163]
-
     print("Loading data...") ## input manual nexamples train, dev e test
-    train_dataset = ECGImageDataset(opt.data, _examples_, 'train')
-    dev_dataset = ECGImageDataset(opt.data, _examples_, 'dev')
-    test_dataset = ECGImageDataset(opt.data, _examples_, 'test')
+    train_dataset = ECGImageDataset(opt.data, samples, 'train')
+    dev_dataset = ECGImageDataset(opt.data, samples, 'dev')
+    test_dataset = ECGImageDataset(opt.data, samples, 'test')
 
     train_dataloader = DataLoader(train_dataset, batch_size=opt.batch_size, shuffle=True)
     dev_dataloader = DataLoader(dev_dataset, batch_size=opt.batch_size, shuffle=False)
@@ -282,7 +281,7 @@ def main():
     class_weights = class_weights.to(opt.gpu_id)
     criterion = nn.BCEWithLogitsLoss(pos_weight=class_weights) #https://learnopencv.com/multi-label-image-classification-with-pytorch-image-tagging/
     # https://pytorch.org/docs/stable/generated/torch.nn.BCEWithLogitsLoss.html
-    print('AAAAA')
+
     # training loop
     epochs = torch.arange(1, opt.epochs + 1)
     train_mean_losses = []

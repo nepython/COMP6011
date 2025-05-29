@@ -24,13 +24,14 @@ from datetime import datetime
 import os
 from count_parameters import count_parameters
 from sklearn.metrics import roc_curve
+from config import samples
 
 
 def modalities_evaluate(model, dataloader, gpu_id=None):
     """
     model: Pytorch model
     X (batch_size, 1000, 3) : batch of examples
-    y (batch_size,4): ground truth labels_train
+    y (batch_size, 5): ground truth labels_train
     """
     model.eval()
     with torch.no_grad():
@@ -229,8 +230,6 @@ def training_late(gpu_id, sig_type, img_type, signal_data, image_data, dropout, 
     img_model.eval()
 
     # LOAD DATA
-    # samples = [17111,2156,2163]
-    samples = [9672,1210,1226]
     train_dataset = LateFusionDataset(signal_data, image_data, sig_model, img_model, sig_type, img_type,
                                       samples, gpu_id, batch_size, part='train')
     dev_dataset = LateFusionDataset(signal_data, image_data, sig_model, img_model, sig_type, img_type,

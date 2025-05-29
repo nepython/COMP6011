@@ -8,6 +8,7 @@ import statistics
 import numpy as np
 import os
 from sklearn.metrics import roc_curve, roc_auc_score
+from config import samples
 
 class AlexNet(nn.Module):
     def __init__(self, n_classes, **kwargs):
@@ -59,7 +60,7 @@ class AlexNet(nn.Module):
 def train_batch(X, y, model, optimizer, criterion, gpu_id=None, **kwargs):
     """
     X (batch_size, 9, 1000, 1000): batch of examples
-    y (batch_size, 4): ground truth labels
+    y (batch_size, 5): ground truth labels
     model: Pytorch model
     optimizer: optimizer for the gradient step
     criterion: loss function
@@ -91,11 +92,11 @@ def evaluate(model, dataloader, thr, gpu_id=None):
     """
     model: Pytorch model
     X (batch_size, 1000, 3) : batch of examples
-    y (batch_size,4): ground truth labels_train
+    y (batch_size, 5): ground truth labels_train
     """
     model.eval()  # set dropout and batch normalization layers to evaluation mode
     with torch.no_grad():
-        matrix = np.zeros((4, 4))
+        matrix = np.zeros((5, 5))
         for i, (x_batch, y_batch) in enumerate(dataloader):
             print('eval {} of {}'.format(i + 1, len(dataloader)), end='\r')
             x_batch, y_batch = x_batch.to(gpu_id), y_batch.to(gpu_id)
@@ -116,7 +117,7 @@ def eval_auroc(model, dataloader, gpu_id=None):
     """
     model: Pytorch model
     X (batch_size, 1000, 3) : batch of examples
-    y (batch_size,4): ground truth labels_train
+    y (batch_size, 5): ground truth labels_train
     """
     model.eval()
     with torch.no_grad():
@@ -204,13 +205,10 @@ def main():
     configure_seed(seed=42)
     configure_device(opt.gpu_id)
 
-    # _examples_ = [17111,2156,2163]
-    _examples = [9672,1210,1226]
-
     print("Loading data...") ## input manual nexamples train, dev e test
-    train_dataset = ECGImageDataset(opt.data, _examples_, 'train')
-    dev_dataset = ECGImageDataset(opt.data, _examples_, 'dev')
-    test_dataset = ECGImageDataset(opt.data, _examples_, 'test')
+    train_dataset = ECGImageDataset(opt.data, samples, 'train')
+    dev_dataset = ECGImageDataset(opt.data, samples, 'dev')
+    test_dataset = ECGImageDataset(opt.data, samples, 'test')
 
     train_dataloader = DataLoader(train_dataset, batch_size=opt.batch_size, shuffle=True)
     dev_dataloader = DataLoader(dev_dataset, batch_size=opt.batch_size, shuffle=False)
@@ -288,8 +286,39 @@ def main():
         	patience_count += 1
 
         if patience_count==20:
-        	plot_losses(epochs_plot, valid_mean_losses, train_mean_losses, ylabel='Loss', name='training-validation-loss-{}-{}'.format(opt.learning_rate, opt.optimizer))
-        	break
+            plot_losses(epochs_plot, valid_mean_losses, train_mean_losses, ylabel='Loss', name='training-validation-loss-{}-{}'.format(opt.learning_rate, opt.optimizer))
+            break
+
+    # Results on test set:
+    matrix = evaluate(model, test_dataloader, 'test', gpu_id=opt.gpu_id)
+    classes = ["NORM", "AFIB", "AFLT", "1dAVb", "RBBB"]
+    sensitivities = []
+    specificities = []
+
+    # Compute sensitivity and specificity for each class
+    for i in range(len(classes)):
+        tp, fp, fn, tn = matrix[i]
+        sensi = tp / (tp + fn)
+        spec = tn / (tn + fp)
+        sensitivities.append(sensi)
+        specificities.append(spec)
+
+    # Compute mean sensitivity and specificity
+    mean_sensi = np.mean(matrix[:, 0]) / (np.mean(matrix[:, 0]) + np.mean(matrix[:, 2]))
+    mean_spec = np.mean(matrix[:, 3]) / (np.mean(matrix[:, 3]) + np.mean(matrix[:, 1]))
+
+    # Print results
+    print("Final Test Results:")
+    for i, cls in enumerate(classes):
+        print(f"{cls}: sensitivity - {sensitivities[i]:.2f}; specificity - {specificities[i]:.2f}")
+    print(f"mean: sensitivity - {mean_sensi:.2f}; specificity - {mean_spec:.2f}")
+
+    # Save to file
+    with open(f'results/model/{model.__class__.__name__}.txt', 'w') as f:
+        f.write("Final Test Results:\n")
+        for i, cls in enumerate(classes):
+            f.write(f"{cls}: sensitivity - {sensitivities[i]:.2f}; specificity - {specificities[i]:.2f}\n")
+        f.write(f"mean: sensitivity - {mean_sensi:.2f}; specificity - {mean_spec:.2f}\n")
 
     plot_losses(epochs_plot, valid_mean_losses, train_mean_losses, ylabel='Loss', name='training-validation-loss-{}-{}'.format(opt.learning_rate, opt.optimizer))
 

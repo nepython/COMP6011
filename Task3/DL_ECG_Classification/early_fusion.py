@@ -26,6 +26,7 @@ from datetime import datetime
 import os
 from count_parameters import count_parameters
 from sklearn.metrics import roc_curve
+from config import samples
 
 from torchmetrics.classification import MultilabelAUROC
 
@@ -150,11 +151,11 @@ def fusion_evaluate(model, dataloader, thr, gpu_id=None):
     """
     model: Pytorch model
     X (batch_size, 1000, 3) : batch of examples
-    y (batch_size,4): ground truth labels_train
+    y (batch_size, 5): ground truth labels_train
     """
     model.eval()
     with torch.no_grad():
-        matrix = np.zeros((4, 4))
+        matrix = np.zeros((5, 5))
         for i, (X_sig_batch, X_img_batch, y_batch) in enumerate(dataloader):
             # print('eval {} of {}'.format(i + 1, len(dataloader)), end='\r')
             X_sig_batch, X_img_batch, y_batch = X_sig_batch.to(gpu_id), X_img_batch.to(gpu_id), y_batch.to(gpu_id)
@@ -177,7 +178,7 @@ def fusion_auroc(model, dataloader, gpu_id=None):
     """
     model: Pytorch model
     X (batch_size, 1000, 3) : batch of examples
-    y (batch_size,4): ground truth labels_train
+    y (batch_size, 5): ground truth labels_train
     """
     model.eval()
     with torch.no_grad():
@@ -510,13 +511,9 @@ def main():
     img_features = img_size[img_hook]
 
     # LOAD DATA
-    # samples = [17111, 2156, 2163]
-    samples = [9672,1210,1226]
     train_dataset = FusionDataset(opt.signal_data, opt.image_data, samples, part='train')
     dev_dataset = FusionDataset(opt.signal_data, opt.image_data, samples, part='dev')
     test_dataset = FusionDataset(opt.signal_data, opt.image_data, samples, part='test')
-
-    samples = [9672,1210,1226]
 
     train_dataloader = DataLoader(train_dataset, batch_size=opt.batch_size, shuffle=False)
     dev_dataloader = DataLoader(dev_dataset, batch_size=1, shuffle=False)

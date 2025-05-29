@@ -23,6 +23,7 @@ from datetime import datetime
 import os
 import early_fusion as early
 from count_parameters import count_parameters
+from config import samples
 
 
 class JointFusionNet(nn.Module):
@@ -124,8 +125,6 @@ def training_joint(gpu_id, sig_type, img_type, signal_data, image_data, dropout,
     img_features = 2048  # 9216, 4096, 2048
 
     # LOAD DATA
-    # samples = [17111,2156,2163]
-    samples = [9672,1210,1226]
     train_dataset = early.FusionDataset(signal_data, image_data, samples, part='train')
     dev_dataset = early.FusionDataset(signal_data, image_data, samples, part='dev')
     test_dataset = early.FusionDataset(signal_data, image_data, samples, part='test')

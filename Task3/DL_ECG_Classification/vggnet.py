@@ -13,6 +13,7 @@ import statistics
 import numpy as np
 import os
 from torch.nn import functional as F
+from config import samples
 
 #based on https://medium.com/@tioluwaniaremu/vgg-16-a-simple-implementation-using-pytorch-7850be4d14a1 (visited on May 22, 2022)
 class VGG16(nn.Module):
@@ -139,13 +140,10 @@ def main():
     configure_seed(seed=42)
     configure_device(opt.gpu_id)
 
-    # _examples_ = [17111,2156,2163]
-    _examples_ = [2844,357,362]
-
     print("Loading data...") ## input manual nexamples train, dev e test
-    train_dataset = ECGImageDataset(opt.data, _examples_, 'train')
-    dev_dataset = ECGImageDataset(opt.data, _examples_, 'dev')
-    test_dataset = ECGImageDataset(opt.data, _examples_, 'test')
+    train_dataset = ECGImageDataset(opt.data, samples, 'train')
+    dev_dataset = ECGImageDataset(opt.data, samples, 'dev')
+    test_dataset = ECGImageDataset(opt.data, samples, 'test')
 
     train_dataloader = DataLoader(train_dataset, batch_size=opt.batch_size, shuffle=True)
     dev_dataloader = DataLoader(dev_dataset, batch_size=opt.batch_size, shuffle=False)

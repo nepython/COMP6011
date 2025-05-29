@@ -14,7 +14,7 @@ import numpy as np
 import os
 from sklearn.metrics import roc_curve
 from torchmetrics.classification import MultilabelAUROC
-
+from config import samples
 
 class Attention(nn.Module):
     def __init__(self, hidden_size, batch_first=False):
@@ -144,11 +144,11 @@ def evaluate(model, dataloader, thr, gpu_id=None):
     """
     model: Pytorch model
     X (batch_size, 1000, 3) : batch of examples
-    y (batch_size,4): ground truth labels_train
+    y (batch_size, 5): ground truth labels_train
     """
     model.eval()  # set dropout and batch normalization layers to evaluation mode
     with torch.no_grad():
-        matrix = np.zeros((4, 4))
+        matrix = np.zeros((5, 5))
         for i, (x_batch, y_batch) in enumerate(dataloader):
             print('eval {} of {}'.format(i + 1, len(dataloader)), end='\r')
             x_batch, y_batch = x_batch.to(gpu_id), y_batch.to(gpu_id)
@@ -170,7 +170,7 @@ def auroc(model, dataloader, gpu_id=None):
     """
     model: Pytorch model
     X (batch_size, 1000, 3) : batch of examples
-    y (batch_size,4): ground truth labels_train
+    y (batch_size, 5): ground truth labels_train
     """
     model.eval()  # set dropout and batch normalization layers to evaluation mode
     with torch.no_grad():
@@ -279,8 +279,6 @@ def main():
     configure_seed(seed=42)
     configure_device(opt.gpu_id)
 
-    # samples = [17111, 2156, 2163]
-    samples = [9672,1210,1226]
     print("Loading data...")
     train_dataset = Dataset_for_RNN(opt.data, samples, 'train')
     dev_dataset = Dataset_for_RNN(opt.data, samples, 'dev')
@@ -349,7 +347,7 @@ def main():
         # https://pytorch.org/tutorials/beginner/saving_loading_models.html
         # save the model at each epoch where the validation loss is the best so far
         if val_loss == np.min(valid_mean_losses):
-            f = os.path.join(opt.path_save_model, str(datetime.timestamp(dt)) + 'model' + str(ii.item()))
+            f = os.path.join(opt.path_save_model, 'model' + str(ii.item()))
             best_model = ii
             torch.save(model.state_dict(), f)
 
@@ -369,36 +367,35 @@ def main():
     thr = threshold_optimization(model, dev_dataloader_thr)
 
     # Results on test set:
-    matrix = evaluate(model, test_dataloader, thr, gpu_id=opt.gpu_id)
+    matrix = evaluate(model, test_dataloader, 'test', gpu_id=opt.gpu_id)
+    classes = ["NORM", "AFIB", "AFLT", "1dAVb", "RBBB"]
+    sensitivities = []
+    specificities = []
 
-    # compute sensitivity and specificity for each class:
-    MI_sensi = matrix[0, 0] / (matrix[0, 0] + matrix[0, 1])
-    MI_spec = matrix[0, 3] / (matrix[0, 3] + matrix[0, 2])
-    STTC_sensi = matrix[1, 0] / (matrix[1, 0] + matrix[1, 1])
-    STTC_spec = matrix[1, 3] / (matrix[1, 3] + matrix[1, 2])
-    CD_sensi = matrix[2, 0] / (matrix[2, 0] + matrix[2, 1])
-    CD_spec = matrix[2, 3] / (matrix[2, 3] + matrix[2, 2])
-    HYP_sensi = matrix[3, 0] / (matrix[3, 0] + matrix[3, 1])
-    HYP_spec = matrix[3, 3] / (matrix[3, 3] + matrix[3, 2])
+    # Compute sensitivity and specificity for each class
+    for i in range(len(classes)):
+        tp, fp, fn, tn = matrix[i]
+        sensi = tp / (tp + fn)
+        spec = tn / (tn + fp)
+        sensitivities.append(sensi)
+        specificities.append(spec)
 
-    # compute mean sensitivity and specificity:
-    mean_sensi = np.mean(matrix[:, 0]) / (np.mean(matrix[:, 0]) + np.mean(matrix[:, 1]))
-    mean_spec = np.mean(matrix[:, 3]) / (np.mean(matrix[:, 3]) + np.mean(matrix[:, 2]))
+    # Compute mean sensitivity and specificity
+    mean_sensi = np.mean(matrix[:, 0]) / (np.mean(matrix[:, 0]) + np.mean(matrix[:, 2]))
+    mean_spec = np.mean(matrix[:, 3]) / (np.mean(matrix[:, 3]) + np.mean(matrix[:, 1]))
 
-    # print results:
-    print('Final Test Results: \n ' + str(matrix) + '\n' + 'MI: sensitivity - ' + str(MI_sensi) + '; specificity - '
-          + str(MI_spec) + '\n' + 'STTC: sensitivity - ' + str(STTC_sensi) + '; specificity - ' + str(STTC_spec)
-          + '\n' + 'CD: sensitivity - ' + str(CD_sensi) + '; specificity - ' + str(CD_spec)
-          + '\n' + 'HYP: sensitivity - ' + str(HYP_sensi) + '; specificity - ' + str(HYP_spec)
-          + '\n' + 'mean: sensitivity - ' + str(mean_sensi) + '; specificity - ' + str(mean_spec))
+    # Print results
+    print("Final Test Results:")
+    for i, cls in enumerate(classes):
+        print(f"{cls}: sensitivity - {sensitivities[i]:.2f}; specificity - {specificities[i]:.2f}")
+    print(f"mean: sensitivity - {mean_sensi:.2f}; specificity - {mean_spec:.2f}")
 
-    dt = datetime.now()
-    with open('results/' + 'model' + str(best_model.item()) + '_' + str(datetime.timestamp(dt)) + '.txt', 'w') as f:
-        print('Final Test Results: \n ' + str(matrix) + '\n' + 'MI: sensitivity - ' + str(MI_sensi) + '; specificity - '
-              + str(MI_spec) + '\n' + 'STTC: sensitivity - ' + str(STTC_sensi) + '; specificity - ' + str(STTC_spec)
-              + '\n' + 'CD: sensitivity - ' + str(CD_sensi) + '; specificity - ' + str(CD_spec)
-              + '\n' + 'HYP: sensitivity - ' + str(HYP_sensi) + '; specificity - ' + str(HYP_spec)
-              + '\n' + 'mean: sensitivity - ' + str(mean_sensi) + '; specificity - ' + str(mean_spec), file=f)
+    # Save to file
+    with open(f'results/model/{model.__class__.__name__}.txt', 'w') as f:
+        f.write("Final Test Results:\n")
+        for i, cls in enumerate(classes):
+            f.write(f"{cls}: sensitivity - {sensitivities[i]:.2f}; specificity - {specificities[i]:.2f}\n")
+        f.write(f"mean: sensitivity - {mean_sensi:.2f}; specificity - {mean_spec:.2f}\n")
 
     # plot
     epochs_axis = torch.arange(1, epochs_run + 1)

@@ -12,6 +12,7 @@ from sklearn.metrics import recall_score
 import statistics
 import numpy as np
 import os
+from config import samples
 
 #simple CNN for classification
 class simplecnn(nn.Module):
@@ -128,13 +129,10 @@ def main():
     configure_seed(seed=42)
     configure_device(opt.gpu_id)
 
-    # _examples_ = [17111,2156,2163]
-    examples = [9672,1210,1226]
-
     print("Loading data...") ## input manual nexamples train, dev e test
-    train_dataset = ECGImageDataset(opt.data, _examples_, 'train')
-    dev_dataset = ECGImageDataset(opt.data, _examples_, 'dev')
-    test_dataset = ECGImageDataset(opt.data, _examples_, 'test')
+    train_dataset = ECGImageDataset(opt.data, samples, 'train')
+    dev_dataset = ECGImageDataset(opt.data, samples, 'dev')
+    test_dataset = ECGImageDataset(opt.data, samples, 'test')
 
     train_dataloader = DataLoader(train_dataset, batch_size=opt.batch_size, shuffle=True)
     dev_dataloader = DataLoader(dev_dataset, batch_size=opt.batch_size, shuffle=False)
@@ -199,8 +197,36 @@ def main():
         #https://pytorch.org/tutorials/beginner/saving_loading_models.html (save the model at the end of each epoch)
         torch.save(model.state_dict(), os.path.join(opt.path_save_model, 'model'+ str(ii.item())))
 
-    print('Final Test Results:')
-    print(evaluate(model, test_dataloader, 'test', gpu_id=opt.gpu_id))
+    matrix = evaluate(model, test_dataloader, 'test', gpu_id=opt.gpu_id)
+    classes = ["NORM", "AFIB", "AFLT", "1dAVb", "RBBB"]
+    sensitivities = []
+    specificities = []
+
+    # Compute sensitivity and specificity for each class
+    for i in range(len(classes)):
+        tp, fp, fn, tn = matrix[i]
+        sensi = tp / (tp + fn)
+        spec = tn / (tn + fp)
+        sensitivities.append(sensi)
+        specificities.append(spec)
+
+    # Compute mean sensitivity and specificity
+    mean_sensi = np.mean(matrix[:, 0]) / (np.mean(matrix[:, 0]) + np.mean(matrix[:, 2]))
+    mean_spec = np.mean(matrix[:, 3]) / (np.mean(matrix[:, 3]) + np.mean(matrix[:, 1]))
+
+    # Print results
+    print("Final Test Results:")
+    for i, cls in enumerate(classes):
+        print(f"{cls}: sensitivity - {sensitivities[i]:.2f}; specificity - {specificities[i]:.2f}")
+    print(f"mean: sensitivity - {mean_sensi:.2f}; specificity - {mean_spec:.2f}")
+
+    # Save to file
+    with open(f'results/model/{str(model.__class__.__name__)}.txt', 'w') as f:
+        f.write("Final Test Results:\n")
+        for i, cls in enumerate(classes):
+            f.write(f"{cls}: sensitivity - {sensitivities[i]:.2f}; specificity - {specificities[i]:.2f}\n")
+        f.write(f"mean: sensitivity - {mean_sensi:.2f}; specificity - {mean_spec:.2f}\n")
+
     # plot
     plot(epochs, train_mean_losses, ylabel='Loss', name='training-loss-{}-{}'.format(opt.learning_rate, opt.optimizer))
     plot(epochs, valid_specificity, ylabel='Specificity', name='validation-specificity-{}-{}'.format(opt.learning_rate, opt.optimizer))

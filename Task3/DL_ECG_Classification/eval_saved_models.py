@@ -8,7 +8,7 @@ from cnn_lstm import CNN1d_LSTM
 from cnn_gru import CNN1d_GRU
 from gru_with_attention import RNN_att
 from gru import RNN, threshold_optimization, auroc, evaluate_with_norm
-
+from config import samples
 
 def main():
     parser = argparse.ArgumentParser()
@@ -89,11 +89,11 @@ def main():
     model.eval()
 
     # test dataset
-    test_dataset = Dataset_for_RNN(path_to_data, [2844, 357, 362], 'test')
+    test_dataset = Dataset_for_RNN(path_to_data, samples, 'test')
     test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
     # dev dataset
-    dev_dataset = Dataset_for_RNN(path_to_data, [2844, 357, 362], 'dev')
+    dev_dataset = Dataset_for_RNN(path_to_data, samples, 'dev')
     dev_dataloader = DataLoader(dev_dataset, batch_size=512, shuffle=False)
 
     # threshold optimization
@@ -104,73 +104,43 @@ def main():
     # matrix = evaluate(model, test_dataloader, thr, gpu_id=None)
     aurocs = auroc(model, test_dataloader, gpu_id=gpu_id)
 
-    MI_sensi = matrix[0, 0] / (matrix[0, 0] + matrix[0, 1])
-    MI_spec = matrix[0, 3] / (matrix[0, 3] + matrix[0, 2])
-    MI_acc = (matrix[0, 0] + matrix[0, 3]) / np.sum(matrix[0])
-    MI_prec = matrix[0, 0] / (matrix[0, 0] + matrix[0, 2])
-    MI_f1 = (2 * matrix[0, 0]) / (2 * matrix[0, 0] + matrix[0, 2] + matrix[0, 1])
-    MI_auroc = aurocs[0].item()
+    classes = ["NORM", "AFIB", "AFLT", "1dAVb", "RBBB"]
+    metrics = {
+        'sensitivity': [],
+        'specificity': [],
+        'accuracy': [],
+        'precision': [],
+        'f1_score': [],
+        'auroc': []
+    }
 
+    # Compute sensitivity and specificity for each class
+    for i in range(len(classes)):
+        tp, fp, fn, tn = matrix[i]
+        sensi = tp / (tp + fn)
+        spec = tn / (tn + fp)
+        acc = (tp + tn) / np.sum(matrix[i])
+        prec = tp / (tp + fp) if (tp + fp) > 0 else 0
+        f1 = (2 * tp) / (2 * tp + fp + fn) if (2 * tp + fp + fn) > 0 else 0
+        auroc_value = aurocs[i].item() if i < len(aurocs) else 0
+        metrics['sensitivities'].append(sensi)
+        metrics['specificities'].append(spec)
+        metrics['accuracies'].append(acc)
+        metrics['precisions'].append(prec)
+        metrics['f1_scores'].append(f1)
+        metrics['auroc_values'].append(auroc_value)
 
-    STTC_sensi = matrix[1, 0] / (matrix[1, 0] + matrix[1, 1])
-    STTC_spec = matrix[1, 3] / (matrix[1, 3] + matrix[1, 2])
-    STTC_acc = (matrix[1, 0] + matrix[1, 3]) / np.sum(matrix[1])
-    STTC_prec = matrix[1, 0] / (matrix[1, 0] + matrix[1, 2])
-    STTC_f1 = (2 * matrix[1, 0]) / (2 * matrix[1, 0] + matrix[1, 2] + matrix[1, 1])
-    STTC_auroc = aurocs[1].item()
+    # Compute mean for each metric
+    mean_values = {metric: np.mean(values) for metric, values in metrics.items()}
+    mean_values['g_mean'] = np.sqrt(mean_values['sensitivities'] * mean_values['specificities'])
 
-    CD_sensi = matrix[2, 0] / (matrix[2, 0] + matrix[2, 1])
-    CD_spec = matrix[2, 3] / (matrix[2, 3] + matrix[2, 2])
-    CD_acc = (matrix[2, 0] + matrix[2, 3]) / np.sum(matrix[2])
-    CD_prec = matrix[2, 0] / (matrix[2, 0] + matrix[2, 2])
-    CD_f1 = (2 * matrix[2, 0]) / (2 * matrix[2, 0] + matrix[2, 2] + matrix[2, 1])
-    CD_auroc = aurocs[2].item()
-
-    HYP_sensi = matrix[3, 0] / (matrix[3, 0] + matrix[3, 1])
-    HYP_spec = matrix[3, 3] / (matrix[3, 3] + matrix[3, 2])
-    HYP_acc = (matrix[3, 0] + matrix[3, 3]) / np.sum(matrix[3])
-    HYP_prec = matrix[3, 0] / (matrix[3, 0] + matrix[3, 2])
-    HYP_f1 = (2 * matrix[3, 0]) / (2 * matrix[3, 0] + matrix[3, 2] + matrix[3, 1])
-    HYP_auroc = aurocs[3].item()
-
-    NORM_sensi = norm_vec[0] / (norm_vec[0] + norm_vec[1])
-    NORM_spec = norm_vec[3] / (norm_vec[3] + norm_vec[2])
-    NORM_acc = (norm_vec[0] + norm_vec[3]) / np.sum(matrix[3])
-    NORM_prec = norm_vec[0] / (norm_vec[0] + norm_vec[2])
-    NORM_f1 = (2 * norm_vec[0]) / (2 * norm_vec[0] + norm_vec[2] + norm_vec[1])
-
-    # compute mean sensitivity and specificity:
-    mean_mat = np.mean(matrix, axis=0)
-    mean_sensi = mean_mat[0] / (mean_mat[0] + mean_mat[1])
-    mean_spec = mean_mat[3] / (mean_mat[3] + mean_mat[2])
-    mean_acc = (mean_mat[0] + mean_mat[3]) / np.sum(mean_mat)
-    mean_prec = mean_mat[0] / (mean_mat[0] + mean_mat[2])
-    mean_f1 = (2 * mean_mat[0]) / (2 * mean_mat[0] + mean_mat[2] + mean_mat[1])
-    mean_auroc = aurocs.mean().item()
-    mean_g = np.sqrt(mean_spec * mean_sensi)
-
-    # compute mean sensitivity and specificity (with norm class):
-    matrix_with_norm = np.vstack((matrix, norm_vec))
-    mean_mat_n = np.mean(matrix_with_norm, axis=0)
-    mean_sensi_n = mean_mat_n[0] / (mean_mat_n[0] + mean_mat_n[1])
-    mean_spec_n = mean_mat_n[3] / (mean_mat_n[3] + mean_mat_n[2])
-    mean_acc_n = (mean_mat_n[0] + mean_mat_n[3]) / np.sum(mean_mat_n)
-    mean_prec_n = mean_mat_n[0] / (mean_mat_n[0] + mean_mat_n[2])
-    mean_f1_n = (2 * mean_mat_n[0]) / (2 * mean_mat_n[0] + mean_mat_n[2] + mean_mat_n[1])
-    # mean_auroc = aurocs.mean().item()
-    mean_g_n = np.sqrt(mean_spec_n * mean_sensi_n)
-
-    print('Final Test Results with Norm: \n ' + str(matrix) + '\n' + str(norm_vec) + '\n\n' +
-          'MI: \n\tsensitivity - ' + str(MI_sensi) + '\n\tspecificity - ' + str(MI_spec) + '\n\tprecision - ' + str(MI_prec) + '\n\taccuracy - ' + str(MI_acc) + '\n\tF1 Score - ' + str(MI_f1) + '\n\tAUROC - ' + str(MI_auroc) + '\n' +
-          'STTC: \n\tsensitivity - ' + str(STTC_sensi) + '\n\tspecificity - ' + str(STTC_spec) + '\n\tprecision - ' + str(STTC_prec) + '\n\taccuracy - ' + str(STTC_acc) + '\n\tF1 Score - ' + str(STTC_f1) + '\n\tAUROC - ' + str(STTC_auroc) + '\n' +
-          'CD: \n\tsensitivity - ' + str(CD_sensi) + '\n\tspecificity - ' + str(CD_spec) + '\n\tprecision - ' + str(CD_prec) + '\n\taccuracy - ' + str(CD_acc) + '\n\tF1 Score - ' + str(CD_f1) + '\n\tAUROC - ' + str(CD_auroc) + '\n' +
-          'HYP: \n\tsensitivity - ' + str(HYP_sensi) + '\n\tspecificity - ' + str(HYP_spec) + '\n\tprecision - ' + str(HYP_prec) + '\n\taccuracy - ' + str(HYP_acc) + '\n\tF1 Score - ' + str(HYP_f1) + '\n\tAUROC - ' + str(HYP_auroc) + '\n' +
-          'NORM: \n\tsensitivity - ' + str(NORM_sensi) + '\n\tspecificity - ' + str(NORM_spec) + '\n\tprecision - ' + str(NORM_prec) + '\n\taccuracy - ' + str(NORM_acc) + '\n\tF1 Score - ' + str(NORM_f1) + '\n' +
-          'mean: \n\tG-Mean - ' + str(mean_g_n) + '\n\tsensitivity - ' + str(mean_sensi_n) + '\n\tspecificity - ' + str(mean_spec_n) + '\n\tprecision - ' + str(mean_prec_n) + '\n\taccuracy - ' + str(mean_acc_n) + '\n\tF1 Score - ' + str(mean_f1_n))
-
-    print('\n\n Final Test Results without Norm: \n' +
-          'mean: \n\tG-Mean - ' + str(mean_g) + '\n\tsensitivity - ' + str(mean_sensi) + '\n\tspecificity - ' + str(mean_spec) + '\n\tprecision - ' + str(mean_prec) + '\n\taccuracy - ' + str(mean_acc) + '\n\tF1 Score - ' + str(mean_f1) + '\n\tAUROC - ' + str(mean_auroc))
-
+    # Print results
+    print("Final Test Results:")
+    for metric, values in metrics.items():
+        for i, cls in enumerate(classes):
+            print(f"{cls}: {metric} - {values[i]:.2f}")
+        print(f"mean: {metric} - {mean_values[metric]:.2f}")
+    print(f"mean: G-Mean - {mean_values['g_mean']:.2f}")
 
 if __name__ == '__main__':
     main()

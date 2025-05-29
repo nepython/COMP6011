@@ -1,11 +1,17 @@
-*.png
-*.json
+.vscode
+.venv
+venv
+__pycache__
+*.py[cod]
 */.ipynb_checkpoints
 */*/.ipynb_checkpoints
 */*/*/.ipynb_checkpoints
+
+*.png
+*.json
 *.zip
-*.pyc
 *.hdf5
+*.pdf
 
 Task3/ptb-xl-1.0.3/*
 Task3/ptb-xl-a-large-publicly-available-electrocardiography-dataset-1.0.3.zip

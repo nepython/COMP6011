@@ -4,6 +4,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 from utils import ECGImageDataset
 from resnet import *
+from config import samples
 
 #define the model
 model = ResNet50(4)
@@ -12,8 +13,6 @@ model.load_state_dict(torch.load('Models/resnet'))
 model.eval() #model in the evaluation mode
 
 #generator for the test dataset
-# samples = [17111,2156,2163]
-samples = [9672,1210,1226]
 test_dataset = ECGImageDataset('Dataset/Images/', samples, 'test')
 test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 

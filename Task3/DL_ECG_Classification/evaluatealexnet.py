@@ -8,6 +8,7 @@ from datetime import datetime
 from utils import ECGImageDataset
 from alexnet import *
 from torchsummary import summary
+from config import samples
 
 model = AlexNet(4)
 model.load_state_dict(torch.load('/mnt/2TBData/hemaxi/ProjetoDL/alexnet1/model162', map_location="cpu"))
@@ -15,8 +16,7 @@ model.load_state_dict(torch.load('/mnt/2TBData/hemaxi/ProjetoDL/alexnet1/model16
 gpu_id = None
 
 model.eval()
-# samples = [17111,2156,2163]
-samples = [9672,1210,1226]
+
 test_dataset = ECGImageDataset('/dev/shm/dataset', samples, 'test')
 dev_dataset = ECGImageDataset('/dev/shm/dataset', samples, 'dev')
 

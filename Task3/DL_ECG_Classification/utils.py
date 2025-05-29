@@ -178,143 +178,33 @@ def computetpfnfp(pred, gt, i, matrix):
 
 def compute_save_metrics(matrix, matrix_dev, opt_threshold, date, epoch, strategy, path_save_model, learning_rate,
                          optimizer, dropout, epochs, hidden_size, batch_size, test_id):
+    classes = ["NORM", "AFIB", "AFLT", "1dAVb", "RBBB"]
+    sensitivities = []
+    specificities = []
 
-    # compute sensitivity and specificity for each class:
-    AFLT_sensi = matrix[0, 0] / (matrix[0, 0] + matrix[0, 1])
-    AFLT_spec = matrix[0, 3] / (matrix[0, 3] + matrix[0, 2])
-    _1dAVb_sensi = matrix[1, 0] / (matrix[1, 0] + matrix[1, 1])
-    _1dAVb_spec = matrix[1, 3] / (matrix[1, 3] + matrix[1, 2])
-    RBBB_sensi = matrix[2, 0] / (matrix[2, 0] + matrix[2, 1])
-    RBBB_spec = matrix[2, 3] / (matrix[2, 3] + matrix[2, 2])
-    LBBB_sensi = matrix[3, 0] / (matrix[3, 0] + matrix[3, 1])
-    LBBB_spec = matrix[3, 3] / (matrix[3, 3] + matrix[3, 2])
+    # Compute sensitivity and specificity for each class
+    for i in range(len(classes)):
+        tp, fp, fn, tn = matrix[i]
+        sensi = tp / (tp + fn)
+        spec = tn / (tn + fp)
+        sensitivities.append(sensi)
+        specificities.append(spec)
 
-    AFLT_sensi_dev = matrix_dev[0, 0] / (matrix_dev[0, 0] + matrix_dev[0, 1])
-    AFLT_spec_dev = matrix_dev[0, 3] / (matrix_dev[0, 3] + matrix_dev[0, 2])
-    _1dAVb_sensi_dev = matrix_dev[1, 0] / (matrix_dev[1, 0] + matrix_dev[1, 1])
-    _1dAVb_spec_dev = matrix_dev[1, 3] / (matrix_dev[1, 3] + matrix_dev[1, 2])
-    RBBB_sensi_dev = matrix_dev[2, 0] / (matrix_dev[2, 0] + matrix_dev[2, 1])
-    RBBB_spec_dev = matrix_dev[2, 3] / (matrix_dev[2, 3] + matrix_dev[2, 2])
-    LBBB_sensi_dev = matrix_dev[3, 0] / (matrix_dev[3, 0] + matrix_dev[3, 1])
-    LBBB_spec_dev = matrix_dev[3, 3] / (matrix_dev[3, 3] + matrix_dev[3, 2])
-
-    # compute mean sensitivity and specificity:
-    mean_sensi = np.mean(matrix[:, 0]) / (np.mean(matrix[:, 0]) + np.mean(matrix[:, 1]))
-    mean_spec = np.mean(matrix[:, 3]) / (np.mean(matrix[:, 3]) + np.mean(matrix[:, 2]))
+    # Compute mean sensitivity and specificity
+    mean_sensi = np.mean(matrix[:, 0]) / (np.mean(matrix[:, 0]) + np.mean(matrix[:, 2]))
+    mean_spec = np.mean(matrix[:, 3]) / (np.mean(matrix[:, 3]) + np.mean(matrix[:, 1]))
     mean_sensi_dev = np.mean(matrix_dev[:, 0]) / (np.mean(matrix_dev[:, 0]) + np.mean(matrix_dev[:, 1]))
     mean_spec_dev = np.mean(matrix_dev[:, 3]) / (np.mean(matrix_dev[:, 3]) + np.mean(matrix_dev[:, 2]))
 
-    # print results:
-    print(
-        "Final Validation Results: \n "
-        + str(matrix_dev)
-        + "\n"
-        + "AFLT: sensitivity - "
-        + str(AFLT_sensi_dev)
-        + "; specificity - "
-        + str(AFLT_spec_dev)
-        + "\n"
-        + "_1dAVb: sensitivity - "
-        + str(_1dAVb_sensi_dev)
-        + "; specificity - "
-        + str(_1dAVb_spec_dev)
-        + "\n"
-        + "RBBB: sensitivity - "
-        + str(RBBB_sensi_dev)
-        + "; specificity - "
-        + str(RBBB_spec_dev)
-        + "\n"
-        + "LBBB: sensitivity - "
-        + str(LBBB_sensi_dev)
-        + "; specificity - "
-        + str(LBBB_spec_dev)
-        + "\n"
-        + "mean: sensitivity - "
-        + str(mean_sensi_dev)
-        + "; specificity - "
-        + str(mean_spec_dev)
-    )
+    # Print results
+    print("Final Test Results:")
+    for i, cls in enumerate(classes):
+        print(f"{cls}: sensitivity - {sensitivities[i]:.2f}; specificity - {specificities[i]:.2f}")
+    print(f"mean: sensitivity - {mean_sensi:.2f}; specificity - {mean_spec:.2f}")
 
-    print(
-        "Final Test Results: \n "
-        + str(matrix)
-        + "\n"
-        + "AFLT: sensitivity - "
-        + str(AFLT_sensi)
-        + "; specificity - "
-        + str(AFLT_spec)
-        + "\n"
-        + "_1dAVb: sensitivity - "
-        + str(_1dAVb_sensi)
-        + "; specificity - "
-        + str(_1dAVb_spec)
-        + "\n"
-        + "RBBB: sensitivity - "
-        + str(RBBB_sensi)
-        + "; specificity - "
-        + str(RBBB_spec)
-        + "\n"
-        + "LBBB: sensitivity - "
-        + str(LBBB_sensi)
-        + "; specificity - "
-        + str(LBBB_spec)
-        + "\n"
-        + "mean: sensitivity - "
-        + str(mean_sensi)
-        + "; specificity - "
-        + str(mean_spec)
-    )
-
-    with open(
-        "{}{}{}_{}_ep{}_lr{}_opt{}_dr{}_eps{}_hs{}_bs{}.txt".format(
-            path_save_model,
-            test_id,
-            strategy,
-            date,
-            epoch.item(),
-            learning_rate,
-            optimizer,
-            dropout,
-            epochs,
-            hidden_size,
-            batch_size,
-        ),
-        "w",
-    ) as f:
-        f.write("Final Results\n\n")
-        f.write("Threshold: {}\n\n".format(np.round(opt_threshold, 4)))
-
-        f.write("Development/Validation\n")
-        f.write("AFLT\n\tSensitivity: {}\n\tSpecificity: {}\n\n".format(AFLT_sensi_dev, AFLT_spec_dev))
-        f.write("_1dAVb\n\tSensitivity: {}\n\tSpecificity: {}\n\n".format(_1dAVb_sensi_dev, _1dAVb_spec_dev))
-        f.write("RBBB\n\tSensitivity: {}\n\tSpecificity: {}\n\n".format(RBBB_sensi_dev, RBBB_spec_dev))
-        f.write("LBBB\n\tSensitivity: {}\n\tSpecificity: {}\n\n".format(LBBB_sensi_dev, LBBB_spec_dev))
-        f.write("Mean\n\tSensitivity: {}\n\tSpecificity: {}\n\n\n".format(mean_sensi_dev, mean_spec_dev))
-
-        f.write("Test\n")
-        f.write("AFLT\n\tSensitivity: {}\n\tSpecificity: {}\n\n".format(AFLT_sensi, AFLT_spec))
-        f.write("_1dAVb\n\tSensitivity: {}\n\tSpecificity: {}\n\n".format(_1dAVb_sensi, _1dAVb_spec))
-        f.write("RBBB\n\tSensitivity: {}\n\tSpecificity: {}\n\n".format(RBBB_sensi, RBBB_spec))
-        f.write("LBBB\n\tSensitivity: {}\n\tSpecificity: {}\n\n".format(LBBB_sensi, LBBB_spec))
-        f.write("Mean\n\tSensitivity: {}\n\tSpecificity: {}".format(mean_sensi, mean_spec))
-
-    fields = [
-        test_id,
-        strategy,
-        date,
-        epoch.item(),
-        learning_rate,
-        optimizer,
-        dropout,
-        epochs,
-        hidden_size,
-        batch_size,
-        mean_sensi_dev,
-        mean_spec_dev,
-        mean_sensi,
-        mean_spec
-    ]
-
-    with open(path_save_model + "auto_results.csv", 'a', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerow(fields)
+    # Save to file
+    with open(f'results/model/{strategy}.txt', 'w') as f:
+        f.write("Final Test Results:\n")
+        for i, cls in enumerate(classes):
+            f.write(f"{cls}: sensitivity - {sensitivities[i]:.2f}; specificity - {specificities[i]:.2f}\n")
+        f.write(f"mean: sensitivity - {mean_sensi:.2f}; specificity - {mean_spec:.2f}\n")

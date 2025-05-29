@@ -9,6 +9,7 @@ import early_fusion as early
 import joint_fusion as joint
 
 from count_parameters import count_parameters
+from config import samples
 
 type = ['late', 'early', 'joint'][0]
 
@@ -46,8 +47,6 @@ sig_model = gru.RNN(3, 128, 2, 4, 0.5, gpu_id=gpu_id,
 
 img_data = "Dataset/Images/"
 img_model = alexnet.AlexNet(4).to(gpu_id)
-# samples = [17111,2156,2132]
-samples = [9672,1210,1226]
 
 if type == 'late':
     sig_model.load_state_dict(torch.load(sig_path, map_location=torch.device(gpu_id)))
@@ -104,49 +103,31 @@ else:
 
 count_parameters(model)
 
-MI_sensi = matrix[0, 0] / (matrix[0, 0] + matrix[0, 1])
-MI_spec = matrix[0, 3] / (matrix[0, 3] + matrix[0, 2])
-MI_acc = (matrix[0, 0] + matrix[0, 3]) / np.sum(matrix[0])
-MI_prec = matrix[0, 0] / (matrix[0, 0] + matrix[0, 2])
-MI_f1 = (2 * matrix[0, 0]) / (2 * matrix[0, 0] + matrix[0, 2] + matrix[0, 1])
-MI_auroc = aurocs[0].item()
+classes = ["NORM", "AFIB", "AFLT", "1dAVb", "RBBB"]
+sensitivities = []
+specificities = []
 
+# Compute sensitivity and specificity for each class
+for i in range(len(classes)):
+    tp, fp, fn, tn = matrix[i]
+    sensi = tp / (tp + fn)
+    spec = tn / (tn + fp)
+    sensitivities.append(sensi)
+    specificities.append(spec)
 
-STTC_sensi = matrix[1, 0] / (matrix[1, 0] + matrix[1, 1])
-STTC_spec = matrix[1, 3] / (matrix[1, 3] + matrix[1, 2])
-STTC_acc = (matrix[1, 0] + matrix[1, 3]) / np.sum(matrix[1])
-STTC_prec = matrix[1, 0] / (matrix[1, 0] + matrix[1, 2])
-STTC_f1 = (2 * matrix[1, 0]) / (2 * matrix[1, 0] + matrix[1, 2] + matrix[1, 1])
-STTC_auroc = aurocs[1].item()
+# Compute mean sensitivity and specificity
+mean_sensi = np.mean(matrix[:, 0]) / (np.mean(matrix[:, 0]) + np.mean(matrix[:, 2]))
+mean_spec = np.mean(matrix[:, 3]) / (np.mean(matrix[:, 3]) + np.mean(matrix[:, 1]))
 
-CD_sensi = matrix[2, 0] / (matrix[2, 0] + matrix[2, 1])
-CD_spec = matrix[2, 3] / (matrix[2, 3] + matrix[2, 2])
-CD_acc = (matrix[2, 0] + matrix[2, 3]) / np.sum(matrix[2])
-CD_prec = matrix[2, 0] / (matrix[2, 0] + matrix[2, 2])
-CD_f1 = (2 * matrix[2, 0]) / (2 * matrix[2, 0] + matrix[2, 2] + matrix[2, 1])
-CD_auroc = aurocs[2].item()
+# Print results
+print("Final Test Results:")
+for i, cls in enumerate(classes):
+    print(f"{cls}: sensitivity - {sensitivities[i]:.2f}; specificity - {specificities[i]:.2f}")
+print(f"mean: sensitivity - {mean_sensi:.2f}; specificity - {mean_spec:.2f}")
 
-HYP_sensi = matrix[3, 0] / (matrix[3, 0] + matrix[3, 1])
-HYP_spec = matrix[3, 3] / (matrix[3, 3] + matrix[3, 2])
-HYP_acc = (matrix[3, 0] + matrix[3, 3]) / np.sum(matrix[3])
-HYP_prec = matrix[3, 0] / (matrix[3, 0] + matrix[3, 2])
-HYP_f1 = (2 * matrix[3, 0]) / (2 * matrix[3, 0] + matrix[3, 2] + matrix[3, 1])
-HYP_auroc = aurocs[3].item()
-
-# compute mean sensitivity and specificity:
-mean_mat = np.mean(matrix, axis=0)
-mean_sensi = mean_mat[0] / (mean_mat[0] + mean_mat[1])
-mean_spec = mean_mat[3] / (mean_mat[3] + mean_mat[2])
-mean_acc = (mean_mat[0] + mean_mat[3]) / np.sum(mean_mat)
-mean_prec = mean_mat[0] / (mean_mat[0] + mean_mat[2])
-mean_f1 = (2 * mean_mat[0]) / (2 * mean_mat[0] + mean_mat[2] + mean_mat[1])
-mean_auroc = aurocs.mean().item()
-mean_g = np.sqrt(mean_spec * mean_sensi)
-
-print('Final Test Results: \n ' + str(matrix) + '\n\n' +
-      'MI: \n\tsensitivity - ' + str(MI_sensi) + '\n\tspecificity - ' + str(MI_spec) + '\n\tprecision - ' + str(MI_prec) + '\n\taccuracy - ' + str(MI_acc) + '\n\tF1 Score - ' + str(MI_f1) + '\n\tAUROC - ' + str(MI_auroc) + '\n' +
-      'STTC: \n\tsensitivity - ' + str(STTC_sensi) + '\n\tspecificity - ' + str(STTC_spec) + '\n\tprecision - ' + str(STTC_prec) + '\n\taccuracy - ' + str(STTC_acc) + '\n\tF1 Score - ' + str(STTC_f1) + '\n\tAUROC - ' + str(STTC_auroc) + '\n' +
-      'CD: \n\tsensitivity - ' + str(CD_sensi) + '\n\tspecificity - ' + str(CD_spec) + '\n\tprecision - ' + str(CD_prec) + '\n\taccuracy - ' + str(CD_acc) + '\n\tF1 Score - ' + str(CD_f1) + '\n\tAUROC - ' + str(CD_auroc) + '\n' +
-      'HYP: \n\tsensitivity - ' + str(HYP_sensi) + '\n\tspecificity - ' + str(HYP_spec) + '\n\tprecision - ' + str(HYP_prec) + '\n\taccuracy - ' + str(HYP_acc) + '\n\tF1 Score - ' + str(HYP_f1) + '\n\tAUROC - ' + str(HYP_auroc) + '\n' +
-      'mean: \n\tG-Mean - ' + str(mean_g) + '\n\tsensitivity - ' + str(mean_sensi) + '\n\tspecificity - ' + str(mean_spec) + '\n\tprecision - ' + str(mean_prec) + '\n\taccuracy - ' + str(mean_acc) + '\n\tF1 Score - ' + str(mean_f1) + '\n\tAUROC - ' + str(mean_auroc))
-
+# Save to file
+with open(f'results/model/{str(model.__class__.__name__)}.txt', 'w') as f:
+    f.write("Final Test Results:\n")
+    for i, cls in enumerate(classes):
+        f.write(f"{cls}: sensitivity - {sensitivities[i]:.2f}; specificity - {specificities[i]:.2f}\n")
+    f.write(f"mean: sensitivity - {mean_sensi:.2f}; specificity - {mean_spec:.2f}\n")
