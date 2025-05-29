@@ -229,12 +229,14 @@ def training_late(gpu_id, sig_type, img_type, signal_data, image_data, dropout, 
     img_model.eval()
 
     # LOAD DATA
+    # samples = [17111,2156,2163]
+    samples = [9672,1210,1226]
     train_dataset = LateFusionDataset(signal_data, image_data, sig_model, img_model, sig_type, img_type,
-                                      [17111, 2156, 2163], gpu_id, batch_size, part='train')
+                                      samples, gpu_id, batch_size, part='train')
     dev_dataset = LateFusionDataset(signal_data, image_data, sig_model, img_model, sig_type, img_type,
-                                    [17111, 2156, 2163], gpu_id, 1, part='dev')
+                                    samples, gpu_id, 1, part='dev')
     test_dataset = LateFusionDataset(signal_data, image_data, sig_model, img_model, sig_type, img_type,
-                                     [17111, 2156, 2163], gpu_id, 1, part='test')
+                                     samples, gpu_id, 1, part='test')
 
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=False)
     dev_dataloader = DataLoader(dev_dataset, batch_size=1, shuffle=False)
@@ -407,11 +409,11 @@ def main():
 
     # LOAD DATA
     train_dataset = LateFusionDataset(opt.signal_data, opt.image_data, sig_model, img_model, sig_type, img_type,
-                                      [17111, 2156, 2163], opt.gpu_id, opt.batch_size, part='train')
+                                      samples, opt.gpu_id, opt.batch_size, part='train')
     dev_dataset = LateFusionDataset(opt.signal_data, opt.image_data, sig_model, img_model, sig_type, img_type,
-                                    [17111, 2156, 2163], opt.gpu_id, 1, part='dev')
+                                    samples, opt.gpu_id, 1, part='dev')
     test_dataset = LateFusionDataset(opt.signal_data, opt.image_data, sig_model, img_model, sig_type, img_type,
-                                     [17111, 2156, 2163], opt.gpu_id, 1, part='test')
+                                     samples, opt.gpu_id, 1, part='test')
 
     train_dataloader = DataLoader(train_dataset, batch_size=opt.batch_size, shuffle=False)
     dev_dataloader = DataLoader(dev_dataset, batch_size=1, shuffle=False)

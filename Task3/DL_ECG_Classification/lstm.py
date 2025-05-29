@@ -211,7 +211,7 @@ def main():
     configure_device(opt.gpu_id)
 
     # samples = [17111,2156,2163]
-    samples = [2844,357,362]
+    samples = [9672,1210,1226]
     print("Loading data...")
     train_dataset = Dataset_for_RNN(opt.data, samples, 'train')
     dev_dataset = Dataset_for_RNN(opt.data, samples, 'dev')

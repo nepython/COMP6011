@@ -191,7 +191,7 @@ def main():
     configure_device(opt.gpu_id)
 
     # _examples_ = [17111,2156,2163]
-    _examples_ = [2844,357,362]
+    _examples_ = [9672,1210,1226]
 
     print("Loading data...") ## input manual nexamples train, dev e test
     train_dataset = ECGImageDataset(opt.data, _examples_, 'train')

@@ -15,9 +15,10 @@ model.load_state_dict(torch.load('/mnt/2TBData/hemaxi/ProjetoDL/alexnet1/model16
 gpu_id = None
 
 model.eval()
-
-test_dataset = ECGImageDataset('/dev/shm/dataset', [17111,2156,2163], 'test')
-dev_dataset = ECGImageDataset('/dev/shm/dataset', [17111,2156,2163], 'dev')
+# samples = [17111,2156,2163]
+samples = [9672,1210,1226]
+test_dataset = ECGImageDataset('/dev/shm/dataset', samples, 'test')
+dev_dataset = ECGImageDataset('/dev/shm/dataset', samples, 'dev')
 
 test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 dev_dataloader = DataLoader(dev_dataset, batch_size=2156, shuffle=False)

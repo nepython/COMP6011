@@ -510,9 +510,13 @@ def main():
     img_features = img_size[img_hook]
 
     # LOAD DATA
-    train_dataset = FusionDataset(opt.signal_data, opt.image_data, [17111, 2156, 2163], part='train')
-    dev_dataset = FusionDataset(opt.signal_data, opt.image_data, [17111, 2156, 2163], part='dev')
-    test_dataset = FusionDataset(opt.signal_data, opt.image_data, [17111, 2156, 2163], part='test')
+    # samples = [17111, 2156, 2163]
+    samples = [9672,1210,1226]
+    train_dataset = FusionDataset(opt.signal_data, opt.image_data, samples, part='train')
+    dev_dataset = FusionDataset(opt.signal_data, opt.image_data, samples, part='dev')
+    test_dataset = FusionDataset(opt.signal_data, opt.image_data, samples, part='test')
+
+    samples = [9672,1210,1226]
 
     train_dataloader = DataLoader(train_dataset, batch_size=opt.batch_size, shuffle=False)
     dev_dataloader = DataLoader(dev_dataset, batch_size=1, shuffle=False)

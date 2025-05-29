@@ -3,10 +3,12 @@
 */.ipynb_checkpoints
 */*/.ipynb_checkpoints
 */*/*/.ipynb_checkpoints
+*.zip
+*.pyc
+*.hdf5
 
 Task3/ptb-xl-1.0.3/*
 Task3/ptb-xl-a-large-publicly-available-electrocardiography-dataset-1.0.3.zip
-Task3/validation
 Task3/Images
 Task3/Processed
 Task3/saved_models

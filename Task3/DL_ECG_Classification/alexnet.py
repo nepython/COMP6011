@@ -204,7 +204,8 @@ def main():
     configure_seed(seed=42)
     configure_device(opt.gpu_id)
 
-    _examples_ = [17111,2156,2163]
+    # _examples_ = [17111,2156,2163]
+    _examples = [9672,1210,1226]
 
     print("Loading data...") ## input manual nexamples train, dev e test
     train_dataset = ECGImageDataset(opt.data, _examples_, 'train')

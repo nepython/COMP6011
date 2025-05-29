@@ -1,0 +1,13 @@
+validation02 12 100 1000
+validation02.dat 16 1000.0(0)/mV 16 0 -48 4718 0 I
+validation02.dat 16 1000.0(0)/mV 16 0 11 1969 0 II
+validation02.dat 16 1000.0(0)/mV 16 0 59 62778 0 III
+validation02.dat 16 1000.0(0)/mV 16 0 18 62117 0 AVR
+validation02.dat 16 1000.0(0)/mV 16 0 -53 3755 0 AVL
+validation02.dat 16 1000.0(0)/mV 16 0 34 65125 0 AVF
+validation02.dat 16 1000.0(0)/mV 16 0 108 64939 0 V1
+validation02.dat 16 1000.0(0)/mV 16 0 65 1575 0 V2
+validation02.dat 16 1000.0(0)/mV 16 0 -114 65175 0 V3
+validation02.dat 16 1000.0(0)/mV 16 0 -154 4841 0 V4
+validation02.dat 16 1000.0(0)/mV 16 0 0 14 0 V5
+validation02.dat 16 1000.0(0)/mV 16 0 120 157 0 V6

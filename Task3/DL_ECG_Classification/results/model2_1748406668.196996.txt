@@ -1,0 +1,10 @@
+Final Test Results: 
+ [[  4.   3. 218. 137.]
+ [  0.   0.   0. 362.]
+ [122.  44. 138.  58.]
+ [ 42.  20. 212.  88.]]
+MI: sensitivity - 0.5714285714285714; specificity - 0.38591549295774646
+STTC: sensitivity - nan; specificity - 1.0
+CD: sensitivity - 0.7349397590361446; specificity - 0.29591836734693877
+HYP: sensitivity - 0.6774193548387096; specificity - 0.29333333333333333
+mean: sensitivity - 0.7148936170212766; specificity - 0.5317394888705689

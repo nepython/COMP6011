@@ -14,6 +14,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-gpu_id', type=int, default=None)
     parser.add_argument('-model', type=str, default='gru')
+    parser.add_argument('-path', type=str, default='')
+    parser.add_argument('-data', type=str, default='data_for_rnn/')
     opt = parser.parse_args()
 
     configure_seed(seed=42)
@@ -24,7 +26,7 @@ def main():
     if gpu_id is None:
         device = 'cpu'
 
-    path_to_data = 'data_for_rnn/'  # Dataset/data
+    path_to_data = opt.data
 
     # choose the model for evaluation on test set
 
@@ -33,65 +35,65 @@ def main():
         model_lstm = LSTM(input_size=3, hidden_size=256, num_layers=2, n_classes=4, dropout_rate=0, gpu_id=gpu_id,
                           bidirectional=False)
         model_lstm.load_state_dict(
-            torch.load('best_trained_rnns/lstm_1669240561.183005model28'))
+            torch.load(opt.path or 'best_trained_rnns/lstm_1669240561.183005model28'))
         model = model_lstm.to(opt.gpu_id)
     elif opt.model == 'gru':
         # GRU
-        model_gru = RNN(3, hidden_size=128, num_layers=3, n_classes=4, dropout_rate=0, gpu_id=gpu_id,
+        model_gru = RNN(3, hidden_size=128, num_layers=2, n_classes=4, dropout_rate=0, gpu_id=gpu_id,
                         bidirectional=False)
         model_gru.load_state_dict(
-            torch.load('best_trained_rnns/gru_3layers_dropout0_model8'))
+            torch.load(opt.path or 'best_trained_rnns/gru_3layers_dropout0_model8'))
         model = model_gru.to(opt.gpu_id)
     elif opt.model == 'bigru':
         # BiGRU
         model_bigru = RNN(3, hidden_size=128, num_layers=2, n_classes=4, dropout_rate=0.5, gpu_id=gpu_id,
                           bidirectional=True)
         model_bigru.load_state_dict(
-            torch.load('best_trained_rnns/grubi_dropout05_lr0005_model5'))
+            torch.load(opt.path or 'best_trained_rnns/grubi_dropout05_lr0005_model5'))
         model = model_bigru.to(opt.gpu_id)
     elif opt.model == 'bigruattention':
         # BiGRU
         model_bigru_att = RNN_att(3, hidden_size=128, num_layers=2, n_classes=4, dropout_rate=0.5, gpu_id=gpu_id,
                           bidirectional=True)
         model_bigru_att.load_state_dict(
-            torch.load('best_trained_rnns/grubi_attention_model4'))
+            torch.load(opt.path or 'best_trained_rnns/grubi_attention_model4'))
         model = model_bigru_att.to(opt.gpu_id)
     elif opt.model == 'gruattention':
         # BiGRU
         model_gru_att = RNN_att(3, hidden_size=128, num_layers=3, n_classes=4, dropout_rate=0, gpu_id=gpu_id,
                                   bidirectional=False)
         model_gru_att.load_state_dict(
-            torch.load('best_trained_rnns/gru_attention_model4'))
+            torch.load(opt.path or 'best_trained_rnns/gru_attention_model4'))
         model = model_gru_att.to(opt.gpu_id)
     elif opt.model == 'cnn_gru':
         # 1D-CNN + GRU
         model_cnn_gru = CNN1d_GRU(input_size=3, hidden_size=256, n_classes=4, dropout_rate=0.3, gpu_id=gpu_id)
         model_cnn_gru.load_state_dict(
-            torch.load('best_trained_rnns/cnn_gru_1672230038.517979model49'))
+            torch.load(opt.path or 'best_trained_rnns/cnn_gru_1672230038.517979model49'))
         model = model_cnn_gru.to(opt.gpu_id)
     elif opt.model == 'cnn_lstm':
         # 1D-CNN + LSTM
         model_cnn_lstm = CNN1d_LSTM(input_size=3, hidden_size=128, n_classes=4, dropout_rate=0.3, gpu_id=gpu_id)
         model_cnn_lstm.load_state_dict(
-            torch.load('best_trained_rnns/cnnlstm_model120'))
+            torch.load(opt.path or 'best_trained_rnns/cnnlstm_model120'))
         model = model_cnn_lstm.to(opt.gpu_id)
     elif opt.model == 'bilstm':
         # BiLSTM
         model_bilstm = LSTM(input_size=3, hidden_size=128, num_layers=2, n_classes=4, dropout_rate=0, gpu_id=gpu_id,
                             bidirectional=True)
         model_bilstm.load_state_dict(
-            torch.load('best_trained_rnns/lstmbi_dropout05_model20'))
+            torch.load(opt.path or 'best_trained_rnns/lstmbi_dropout05_model20'))
         model = model_bilstm.to(opt.gpu_id)
 
     # model in the evaluation mode
     model.eval()
 
     # test dataset
-    test_dataset = Dataset_for_RNN(path_to_data, [17111, 2156, 2163], 'test')
+    test_dataset = Dataset_for_RNN(path_to_data, [2844, 357, 362], 'test')
     test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
     # dev dataset
-    dev_dataset = Dataset_for_RNN(path_to_data, [17111, 2156, 2163], 'dev')
+    dev_dataset = Dataset_for_RNN(path_to_data, [2844, 357, 362], 'dev')
     dev_dataloader = DataLoader(dev_dataset, batch_size=512, shuffle=False)
 
     # threshold optimization

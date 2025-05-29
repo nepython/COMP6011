@@ -276,7 +276,7 @@ def main():
     configure_device(opt.gpu_id)
 
     # samples = [17111,2156,2163]
-    samples = [2844,357,362]
+    samples = [9672,1210,1226]
     print("Loading data...")
     train_dataset = Dataset_for_RNN(opt.data, samples, 'train')
     dev_dataset = Dataset_for_RNN(opt.data, samples, 'dev')
@@ -397,7 +397,7 @@ def main():
 
     # plot
     epochs_axis = torch.arange(1, epochs_run + 1)
-    plot_losses(valid_mean_losses, train_mean_losses, ylabel='Loss',
+    plot_losses(epochs_axis, valid_mean_losses, train_mean_losses, ylabel='Loss',
                 name='training-validation-loss-{}-{}-{}'.format(opt.learning_rate, opt.optimizer, dt))
 
 

@@ -124,9 +124,11 @@ def training_joint(gpu_id, sig_type, img_type, signal_data, image_data, dropout,
     img_features = 2048  # 9216, 4096, 2048
 
     # LOAD DATA
-    train_dataset = early.FusionDataset(signal_data, image_data, [17111, 2156, 2163], part='train')
-    dev_dataset = early.FusionDataset(signal_data, image_data, [17111, 2156, 2163], part='dev')
-    test_dataset = early.FusionDataset(signal_data, image_data, [17111, 2156, 2163], part='test')
+    # samples = [17111,2156,2163]
+    samples = [9672,1210,1226]
+    train_dataset = early.FusionDataset(signal_data, image_data, samples, part='train')
+    dev_dataset = early.FusionDataset(signal_data, image_data, samples, part='dev')
+    test_dataset = early.FusionDataset(signal_data, image_data, samples, part='test')
 
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=False)
     dev_dataloader = DataLoader(dev_dataset, batch_size=1, shuffle=False)

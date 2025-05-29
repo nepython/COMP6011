@@ -46,6 +46,8 @@ sig_model = gru.RNN(3, 128, 2, 4, 0.5, gpu_id=gpu_id,
 
 img_data = "Dataset/Images/"
 img_model = alexnet.AlexNet(4).to(gpu_id)
+# samples = [17111,2156,2132]
+samples = [9672,1210,1226]
 
 if type == 'late':
     sig_model.load_state_dict(torch.load(sig_path, map_location=torch.device(gpu_id)))
@@ -54,7 +56,7 @@ if type == 'late':
     img_model.eval()
 
     test_dataset = late.LateFusionDataset(sig_data, img_data, sig_model, img_model, 'gru', 'alexnet',
-                                          [17111, 2156, 2163], gpu_id, batch_size, part='test')
+                                          samples, gpu_id, batch_size, part='test')
 
     model = late.LateFusionNet(4, 8, hidden_size, dropout).to(gpu_id)
 
@@ -71,7 +73,7 @@ elif type == 'early':
     img_model.conv2d_5.register_forward_hook(early.get_activation(img_hook))
     sig_model.rnn.register_forward_hook(early.get_activation(sig_hook))
 
-    test_dataset = early.FusionDataset(sig_data, img_data, [17111, 2156, 2163], part='test')
+    test_dataset = early.FusionDataset(sig_data, img_data, samples, part='test')
 
     model = early.EarlyFusionNet(4, 256, 4096, hidden_size, dropout,
                                  sig_model, img_model, sig_hook, img_hook).to(gpu_id)
@@ -82,7 +84,7 @@ else:  # joint fusion
     sig_model.fc = joint.Identity()
     img_model.linear_3 = joint.Identity()
 
-    test_dataset = early.FusionDataset(sig_data, img_data, [17111, 2156, 2163], part='test')
+    test_dataset = early.FusionDataset(sig_data, img_data, samples, part='test')
 
     model = joint.JointFusionNet(4, 256, 2048, hidden_size, dropout, sig_model, img_model).to(gpu_id)
 

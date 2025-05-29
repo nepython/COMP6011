@@ -12,7 +12,9 @@ model.load_state_dict(torch.load('Models/resnet'))
 model.eval() #model in the evaluation mode
 
 #generator for the test dataset
-test_dataset = ECGImageDataset('Dataset/Images/', [17111,2156,2163], 'test')
+# samples = [17111,2156,2163]
+samples = [9672,1210,1226]
+test_dataset = ECGImageDataset('Dataset/Images/', samples, 'test')
 test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
 #evaluate the performance of the model
