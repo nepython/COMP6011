@@ -17,4 +17,6 @@ Task3/ptb-xl-1.0.3/*
 Task3/ptb-xl-a-large-publicly-available-electrocardiography-dataset-1.0.3.zip
 Task3/Images
 Task3/Processed
-Task3/saved_models
+Task3/DL_ECG_Classification/saved_models/*
+Task3/challenge-2021
+Task3/physionet.org

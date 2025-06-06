@@ -4,6 +4,7 @@
 # import the necessary packages
 import random
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import torch
 from torch.utils.data import Dataset
@@ -30,10 +31,10 @@ def plot(plottable, ylabel="", name=""):
     plt.xlabel("Epoch")
     plt.ylabel(ylabel)
     plt.plot(plottable)
-    plt.savefig("%s.pdf" % (name), bbox_inches="tight")
+    plt.savefig(f"{name}.png", bbox_inches="tight")
 
 
-def plot_losses(epochs, valid_losses, train_losses, ylabel="", name=""):
+def plot_losses(valid_losses, train_losses, ylabel="", name=""):
     plt.clf()
     plt.xlabel("Epoch")
     plt.ylabel(ylabel)
@@ -41,7 +42,7 @@ def plot_losses(epochs, valid_losses, train_losses, ylabel="", name=""):
     plt.plot(valid_losses, label="validation")
     plt.plot(train_losses, label="train")
     plt.legend()
-    plt.savefig("%s.pdf" % (name), bbox_inches="tight")
+    plt.savefig(f"{name}.png", bbox_inches="tight")
 
 
 # create a generator to read the images as we train the model
@@ -128,7 +129,7 @@ def compute_scores(y_true, y_pred, matrix):
     for j in range(len(y_true)):
         pred = y_pred[j]
         gt = y_true[j]
-        for i in range(0, 4):  # for each class
+        for i in range(0, 5):  # for each class
             matrix = computetpfnfp(pred[i], gt[i], i, matrix)
     return matrix
 
@@ -139,7 +140,7 @@ def compute_scores_with_norm(y_true, y_pred, matrix, norm_vec):
         gt = y_true[j]
         norm_pred = True
         norm_gt = True
-        for i in range(0, 4):  # for each class
+        for i in range(0, 5):  # for each class
             matrix = computetpfnfp(pred[i], gt[i], i, matrix)
             if gt[i] == 1 & norm_gt:
                 norm_gt = False
@@ -175,10 +176,76 @@ def computetpfnfp(pred, gt, i, matrix):
         matrix[i, 0] += 1
     return matrix
 
+def compute_metrics(matrix, class_names=None, save_as=None):
+    # Ensure matrix is square
+    assert matrix.shape[0] == matrix.shape[1], "Confusion matrix must be square"
+
+    n = matrix.shape[0]
+    if class_names is None:
+        class_names = [f"Class {i}" for i in range(n)]
+    assert len(class_names) == n, "Length of class_names must match matrix dimensions"
+
+    sensitivity = []
+    specificity = []
+    accuracy = []
+    precision = []
+    f1 = []
+
+    total = np.sum(matrix)
+
+    for i in range(n):
+        TP = matrix[i, i]
+        FN = np.sum(matrix[i, :]) - TP
+        FP = np.sum(matrix[:, i]) - TP
+        TN = total - TP - FP - FN
+
+        # Sensitivity (Recall or True Positive Rate)
+        sens = TP / (TP + FN) if (TP + FN) > 0 else 0
+        sensitivity.append(sens)
+
+        # Specificity (True Negative Rate)
+        spec = TN / (TN + FP) if (TN + FP) > 0 else 0
+        specificity.append(spec)
+
+        # Accuracy
+        acc = (TP + TN) / total if total > 0 else 0
+        accuracy.append(acc)
+
+        # Precision (Positive Predictive Value)
+        prec = TP / (TP + FP) if (TP + FP) > 0 else 0
+        precision.append(prec)
+
+        # F1 Score
+        f1_score = 2 * prec * sens / (prec + sens) if (prec + sens) > 0 else 0
+        f1.append(f1_score)
+
+    # Create DataFrame
+    data = {
+        "Sensitivity": sensitivity,
+        "Specificity": specificity,
+        "Accuracy": accuracy,
+        "Precision": precision,
+        "F1 Score": f1
+    }
+    df = pd.DataFrame(data, index=class_names)
+
+    # Append Mean row
+    mean_row = df.mean(axis=0)
+    mean_row.name = "Mean"
+    df = pd.concat([df, pd.DataFrame([mean_row])])
+
+    # Round values to 2 decimal places
+    df = df.round(2)
+
+    # Save to CSV if specified
+    if save_as is not None:
+        df.to_csv(f"{save_as}.csv")
+
+    return df
 
 def compute_save_metrics(matrix, matrix_dev, opt_threshold, date, epoch, strategy, path_save_model, learning_rate,
                          optimizer, dropout, epochs, hidden_size, batch_size, test_id):
-    classes = ["NORM", "AFIB", "AFLT", "1dAVb", "RBBB"]
+    classes = ["AFIB", "AFLT", "1dAVb", "RBBB", "LBBB"]
     sensitivities = []
     specificities = []
 

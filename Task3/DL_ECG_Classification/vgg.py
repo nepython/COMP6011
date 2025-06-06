@@ -318,9 +318,9 @@ def main():
         valid_specificity.append(specificity)
         print('Valid specificity: %.4f' % (valid_specificity[-1]))
         print('Valid sensitivity: %.4f' % (valid_sensitivity[-1]))
-        torch.save(model.state_dict(), os.path.join(opt.path_save_model, 'model'+ str(ii.item())))
+        torch.save(model.state_dict(), os.path.join(opt.path_save_model, model.__class__.__name__ + '_ep_'+ str(ii.item())))
         if val_loss<last_valid_loss:
-            torch.save(model.state_dict(), os.path.join(opt.path_save_model, 'model'+ str(ii.item())))
+            torch.save(model.state_dict(), os.path.join(opt.path_save_model, model.__class__.__name__ + '_ep_'+ str(ii.item())))
             last_valid_loss = val_loss
             patience_count = 0
 

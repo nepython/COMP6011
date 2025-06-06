@@ -1,6 +1,8 @@
 ## TODO
-1) Adapt code from DL_ECG_classification into our own files
-2) File structure:
-   - Dataset: create_images.py
-   - Models: 1D, 2D, and Fusion designs
-   - Training script: train.py
+1) Train all models on small subset (100) - done
+2) Run validation - in progress
+3) Update set to full - done
+4) Update config, rerun
+5) Write paper - placeholder for benchmark, methodology, interpretation
+
+Work on interpretation

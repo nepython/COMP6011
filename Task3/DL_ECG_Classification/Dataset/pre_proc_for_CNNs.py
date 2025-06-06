@@ -8,15 +8,19 @@
 
 #save the images as tiff files  (0.tif to number_of_examples.tif) 
 #save the labels as numpy arrays (0.tif to number_of_examples.tif)
-
+import cv2
 import tifffile 
 import numpy as np
 import pickle
 import os
-from scipy.signal import butter, sosfilt
+
+from joblib import Parallel, delayed
+from multiprocessing import Manager
 from pyts.image import GramianAngularField, MarkovTransitionField
+from scipy.signal import butter, sosfilt
 from sklearn.metrics.pairwise import pairwise_distances
-import cv2
+from threading import Thread
+from tqdm import tqdm
 
 
 def X_for_CNNs(path, partition='train', save_dir=None):
@@ -27,7 +31,7 @@ def X_for_CNNs(path, partition='train', save_dir=None):
 
     #band pass filter
     band_pass_filter = butter(2, [1, 45], 'bandpass', fs=100, output='sos')
-    for i in range(np.shape(X)[0]):
+    for i in tqdm(range(np.shape(X)[0])):
         X_aux = np.zeros((9,1000,1000))
 
         X_i = X[i] #(1000,12)
@@ -62,6 +66,80 @@ def X_for_CNNs(path, partition='train', save_dir=None):
         X_aux = X_aux.astype('uint8')
         tifffile.imwrite(str(save_dir) + '/X_cnn_' + str(partition) + '/' + str(i) + '.tif', X_aux)
 
+# def process_ecg_sample(i, X, band_pass_filter, save_dir, partition, progress_queue):
+#     X_aux = np.zeros((9, 1000, 1000))
+#     X_i = X[i]  # (1000, 12)
+#     lead_I = X_i[:, 0]
+#     lead_II = X_i[:, 1]
+#     lead_V2 = X_i[:, 7]
+
+#     # Apply a band pass filter (0.05, 40hz)
+#     lead_I = sosfilt(band_pass_filter, lead_I)
+#     lead_II = sosfilt(band_pass_filter, lead_II)
+#     lead_V2 = sosfilt(band_pass_filter, lead_V2)
+
+#     # Normalize before transforming into images
+#     lead_I = ecgnorm(lead_I)
+#     lead_II = ecgnorm(lead_II)
+#     lead_V2 = ecgnorm(lead_V2)
+
+#     # Transform each signal into three images
+#     lead_I_transf = ecgtoimagetransf(lead_I)
+#     lead_II_transf = ecgtoimagetransf(lead_II)
+#     lead_V2_transf = ecgtoimagetransf(lead_V2)
+
+#     # Save in the final array
+#     X_aux[0:3] = lead_I_transf
+#     X_aux[3:6] = lead_II_transf
+#     X_aux[6:9] = lead_V2_transf
+
+#     # Resizing the image
+#     X_aux = resizing(X_aux)
+
+#     X_aux = X_aux * 255.0
+#     X_aux = X_aux.astype('uint8')
+#     tifffile.imwrite(os.path.join(save_dir, f'X_cnn_{partition}', f'{i}.tif'), X_aux)
+
+#     # Update progress bar
+#     progress_queue.put(1)
+
+# def X_for_CNNs(path, partition='train', save_dir=None):
+#     file = os.path.join(path, f'X_{partition}_processed.pickle')
+#     with open(file, "rb") as pickle_in:
+#         X = pickle.load(pickle_in)
+
+#     # Create output directory if it doesn't exist
+#     output_dir = os.path.join(save_dir, f'X_cnn_{partition}')
+#     os.makedirs(output_dir, exist_ok=True)
+
+#     # Band pass filter
+#     band_pass_filter = butter(2, [1, 45], 'bandpass', fs=100, output='sos')
+
+#     # Initialize progress bar and manager queue
+#     manager = Manager()
+#     progress_queue = manager.Queue()
+#     total_samples = np.shape(X)[0]
+#     progress_bar = tqdm(total=total_samples, desc=f'Processing {partition} data')
+
+#     # Function to update progress bar
+#     def update_progress_bar(queue, progress_bar):
+#         while True:
+#             queue.get()
+#             progress_bar.update(1)
+
+#     # Start progress bar updater thread
+#     progress_thread = Thread(target=update_progress_bar, args=(progress_queue, progress_bar))
+#     progress_thread.start()
+
+#     # Parallel processing of ECG samples
+#     Parallel(n_jobs=-1, backend='threading')(
+#         delayed(process_ecg_sample)(i, X, band_pass_filter, save_dir, partition, progress_queue)
+#         for i in range(total_samples)
+#     )
+
+#     # Close progress bar
+#     progress_bar.close()
+#     progress_thread.join()
 
 def ecgnorm(ecg):
     #output between 0 and 1
@@ -129,7 +207,9 @@ def get_mtf(x, size=10):
     y = np.zeros((size, size))
     for i in range(x.shape[0] - 1):
         y[q[i], q[i + 1]] += 1
-    y = y / y.sum(axis=1, keepdims=True)
+    row_sum = y.sum(axis=1, keepdims=True)
+    row_sum[row_sum==0] = 1
+    y /= row_sum
     y[np.isnan(y)] = 0
     
     for i in range(r.shape[0]):

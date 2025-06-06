@@ -13,9 +13,8 @@ from torch import nn
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 
-from utils import configure_device, configure_seed, ECGImageDataset, Dataset_for_RNN, plot_losses, compute_scores, \
-    compute_save_metrics
-import gru as gru
+from utils import configure_device, configure_seed, ECGImageDataset, Dataset_for_RNN, plot_losses, compute_scores, compute_save_metrics, compute_metrics
+from gru import GRU
 import numpy as np
 import statistics
 
@@ -24,9 +23,9 @@ import resnet as resnet
 
 from datetime import datetime
 import os
-from count_parameters import count_parameters
+# from count_parameters import count_parameters
 from sklearn.metrics import roc_curve
-from config import samples
+from config import samples, class_weight, class_names
 
 from torchmetrics.classification import MultilabelAUROC
 
@@ -119,7 +118,7 @@ def fusion_train_batch(X_sig, X_img, y, model, optimizer, criterion,
                        gpu_id=None, **kwargs):
     """
     X (batch_size, 1000, 3): batch of examples
-    y (batch_size, 4): ground truth labels_train
+    y (batch_size, 5): ground truth labels_train
     model: Pytorch model
     optimizer: optimizer for the gradient step
     criterion: loss function
@@ -198,7 +197,7 @@ def fusion_auroc(model, dataloader, gpu_id=None):
 
     preds = torch.stack(preds)
     trues = torch.stack(trues).int()
-    return MultilabelAUROC(num_labels=4, average=None)(preds, trues)
+    return MultilabelAUROC(num_labels=5, average=None)(preds, trues)
     # cols: TP, FN, FP, TN
 
 
@@ -229,7 +228,7 @@ def fusion_threshold_optimization(model, dataloader, gpu_id=None):
     """
     save_probs = []
     save_y = []
-    threshold_opt = np.zeros(4)
+    threshold_opt = np.zeros(5)
 
     model.eval()
     with torch.no_grad():
@@ -244,10 +243,10 @@ def fusion_threshold_optimization(model, dataloader, gpu_id=None):
             save_probs += [probabilities.numpy()]
             save_y += [y_batch.numpy()]
 
-    save_probs = np.array(save_probs).reshape((-1, 4))
-    save_y = np.array(save_y).reshape((-1, 4))
+    save_probs = np.array(save_probs).reshape((-1, 5))
+    save_y = np.array(save_y).reshape((-1, 5))
 
-    for disease in range(0, 4):
+    for disease in range(0, 5):
         # print(probabilities[:, dis])
         # print(Y[:, dis])
         fpr, tpr, thresholds = roc_curve(save_y[:, disease], save_probs[:, disease])
@@ -272,12 +271,12 @@ def training_early(gpu_id, sig_type, img_type, signal_data, image_data, dropout,
 
     # LOAD MODELS
     if sig_type == 'gru':
-        sig_path = 'best_trained_rnns/gru_3lay_128hu'
-        sig_hidden_size = 128
+        sig_path = 'best_trained_rnns/GRU'
+        sig_hidden_size = 256
         num_layers = 3
         dropout_rate = 0.3
 
-        sig_model = gru.RNN(3, sig_hidden_size, num_layers, 4, dropout_rate, gpu_id=gpu_id,
+        sig_model = GRU(3, sig_hidden_size, num_layers, 5, dropout_rate, gpu_id=gpu_id,
                             bidirectional=False).to(gpu_id)
     elif sig_type == 'bigru':
         sig_path = 'save_models/grubi_dropout05_lr0005_model5'
@@ -285,18 +284,18 @@ def training_early(gpu_id, sig_type, img_type, signal_data, image_data, dropout,
         num_layers = 2
         dropout_rate = 0.5
 
-        sig_model = gru.RNN(3, sig_hidden_size, num_layers, 4, dropout_rate, gpu_id=gpu_id,
+        sig_model = GRU(3, sig_hidden_size, num_layers, 5, dropout_rate, gpu_id=gpu_id,
                             bidirectional=True).to(gpu_id)
     else:
         raise ValueError('1D model is not defined.')
 
     if img_type == 'alexnet':
-        img_path = 'save_models/alexnet'
-        img_model = alexnet.AlexNet(4).to(gpu_id)
+        img_path = 'Models/AlexNet'
+        img_model = alexnet.AlexNet(5).to(gpu_id)
 
     elif img_type == 'resnet':
-        img_path = 'Models/resnet'
-        img_model = resnet.ResNet50(4).to(gpu_id)
+        img_path = 'Models/ResNet'
+        img_model = resnet.ResNet50(5).to(gpu_id)
 
     else:
         raise ValueError('2D model is not defined.')
@@ -328,7 +327,7 @@ def training_early(gpu_id, sig_type, img_type, signal_data, image_data, dropout,
     dev_dataloader = DataLoader(dev_dataset, batch_size=1, shuffle=False)
     test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
-    model = EarlyFusionNet(4, sig_features, img_features, hidden_size, dropout,
+    model = EarlyFusionNet(5, sig_features, img_features, hidden_size, dropout,
                            sig_model, img_model, sig_hook, img_hook).to(gpu_id)
 
     # get an optimizer
@@ -345,13 +344,13 @@ def training_early(gpu_id, sig_type, img_type, signal_data, image_data, dropout,
     # get a loss criterion and compute the class weights (nbnegative/nbpositive)
     # according to the comments https://discuss.pytorch.org/t/weighted-binary-cross-entropy/51156/6
     # and https://discuss.pytorch.org/t/multi-label-multi-class-class-imbalance/37573/2
-    class_weights = torch.tensor([17111 / 4389, 17111 / 3136, 17111 / 1915, 17111 / 417], dtype=torch.float)
+    class_weights = torch.tensor(class_weight, dtype=torch.float)
     class_weights = class_weights.to(gpu_id)
     criterion = nn.BCEWithLogitsLoss(pos_weight=class_weights)
     # https://learnopencv.com/multi-label-image-classification-with-pytorch-image-tagging/
     # https://pytorch.org/docs/stable/generated/torch.nn.BCEWithLogitsLoss.html
 
-    count_parameters(model)
+    # count_parameters(model)
 
     # training loop
     epochs_ = torch.arange(1, epochs + 1)
@@ -365,10 +364,8 @@ def training_early(gpu_id, sig_type, img_type, signal_data, image_data, dropout,
     training_date = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     print("Starting early fusion training at: {}".format(training_date))
 
-    saving_dir = os.path.join(path_save_model,
-                              "early_model_{}_lr{}_opt{}_dr{}_eps{}_hs{}_bs{}_l2{}".format(
-                                  training_date, learning_rate, optimizer, dropout, epochs,
-                                  hidden_size, batch_size, l2_decay))
+    f = os.path.join(opt.path_save_model, model.__class__.__name__)
+    saving_dir = f
     print("Save models at: {}".format(saving_dir))
 
     for e in epochs_:
@@ -401,7 +398,7 @@ def training_early(gpu_id, sig_type, img_type, signal_data, image_data, dropout,
         # https://pytorch.org/tutorials/beginner/saving_loading_models.html
         # save the model at each epoch where the validation loss is the best so far
         if val_loss < min_valid_loss:
-            torch.save(model.state_dict(), saving_dir)
+            torch.save(model.state_dict(), os.path.join(opt.path_save_model, model.__class__.__name__ + '_ep_'+ str(e.item())))
             min_valid_loss = val_loss
             patience_count = 0
             best_epoch = e
@@ -419,16 +416,14 @@ def training_early(gpu_id, sig_type, img_type, signal_data, image_data, dropout,
     opt_threshold = fusion_threshold_optimization(model, dev_dataloader, gpu_id=gpu_id)
 
     matrix = fusion_evaluate(model, test_dataloader, opt_threshold, gpu_id=gpu_id)
-    matrix_dev = fusion_evaluate(model, dev_dataloader, opt_threshold, gpu_id=gpu_id)
+    # matrix_dev = fusion_evaluate(model, dev_dataloader, opt_threshold, gpu_id=gpu_id)
 
-    compute_save_metrics(matrix, matrix_dev, opt_threshold, training_date, best_epoch, "early", path_save_model,
-                         learning_rate, optimizer, dropout, epochs, hidden_size, batch_size, test_id)
+    print(matrix)
+    metrics = compute_metrics(matrix, class_names=class_names, save_as=f'results/{model.__class__.__name__}')
+    print(metrics)
 
     # plot
-    plot_losses(valid_mean_losses, train_mean_losses, ylabel='Loss',
-                name="{}{}training-validation-loss-early_{}_ep{}_lr{}_opt{}_dr{}_eps{}_hs{}_bs{}_l2{}".format(
-                    path_save_model, test_id, training_date, e.item(), learning_rate, optimizer, dropout,
-                    epochs, hidden_size, batch_size, l2_decay))
+    plot_losses(valid_mean_losses, train_mean_losses, ylabel='Loss', name=f'results/figures/{model.__class__.__name__}_loss')
 
 
 def main():
@@ -463,12 +458,12 @@ def main():
 
     # LOAD MODELS
     if sig_type == 'gru':
-        sig_path = 'best_trained_rnns/gru_3lay_128hu'
-        hidden_size = 128
-        num_layers = 3
+        sig_path = 'Models/GRU'
+        hidden_size = 256
+        num_layers = 2
         dropout_rate = 0.3
 
-        sig_model = gru.RNN(3, hidden_size, num_layers, 4, dropout_rate, gpu_id=opt.gpu_id,
+        sig_model = GRU(3, hidden_size, num_layers, 5, dropout_rate, gpu_id=opt.gpu_id,
                             bidirectional=False).to(opt.gpu_id)
     elif sig_type == 'bigru':
         sig_path = 'save_models/grubi_dropout05_lr0005_model5'
@@ -476,18 +471,18 @@ def main():
         num_layers = 2
         dropout_rate = 0.5
 
-        sig_model = gru.RNN(3, hidden_size, num_layers, 4, dropout_rate, gpu_id=opt.gpu_id,
+        sig_model = GRU(3, hidden_size, num_layers, 5, dropout_rate, gpu_id=opt.gpu_id,
                             bidirectional=True).to(opt.gpu_id)
     else:
         raise ValueError('1D model is not defined.')
 
     if img_type == 'alexnet':
-        img_path = 'save_models/alexnet'
-        img_model = alexnet.AlexNet(4).to(opt.gpu_id)
+        img_path = 'Models/AlexNet'
+        img_model = alexnet.AlexNet(5).to(opt.gpu_id)
 
     elif img_type == 'resnet':
-        img_path = 'Models/resnet'
-        img_model = resnet.ResNet50(4).to(opt.gpu_id)
+        img_path = 'Models/ResNet'
+        img_model = resnet.ResNet50(5).to(opt.gpu_id)
 
     else:
         raise ValueError('2D model is not defined.')
@@ -519,7 +514,7 @@ def main():
     dev_dataloader = DataLoader(dev_dataset, batch_size=1, shuffle=False)
     test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
-    model = EarlyFusionNet(4, sig_features, img_features, opt.hidden_size, opt.dropout,
+    model = EarlyFusionNet(5, sig_features, img_features, opt.hidden_size, opt.dropout,
                            sig_model, img_model, sig_hook, img_hook).to(opt.gpu_id)
 
     # get an optimizer
@@ -536,13 +531,13 @@ def main():
     # get a loss criterion and compute the class weights (nbnegative/nbpositive)
     # according to the comments https://discuss.pytorch.org/t/weighted-binary-cross-entropy/51156/6
     # and https://discuss.pytorch.org/t/multi-label-multi-class-class-imbalance/37573/2
-    class_weights = torch.tensor([17111 / 4389, 17111 / 3136, 17111 / 1915, 17111 / 417], dtype=torch.float)
+    class_weights = torch.tensor(class_weight, dtype=torch.float)
     class_weights = class_weights.to(opt.gpu_id)
     criterion = nn.BCEWithLogitsLoss(pos_weight=class_weights)
     # https://learnopencv.com/multi-label-image-classification-with-pytorch-image-tagging/
     # https://pytorch.org/docs/stable/generated/torch.nn.BCEWithLogitsLoss.html
 
-    count_parameters(model)
+    # count_parameters(model)
 
     # training loop
     epochs = torch.arange(1, opt.epochs + 1)
@@ -556,10 +551,7 @@ def main():
     training_date = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     print("Starting early fusion training at: {}".format(training_date))
 
-    saving_dir = os.path.join(opt.path_save_model,
-                              "early_model_{}_lr{}_opt{}_dr{}_eps{}_hs{}_bs{}_l2{}".format(
-                                  training_date, opt.learning_rate, opt.optimizer, opt.dropout, opt.epochs,
-                                  opt.hidden_size, opt.batch_size, opt.l2_decay))
+    saving_dir = os.path.join(opt.path_save_model, model.__class__.__name__)
     print("Save models at: {}".format(saving_dir))
 
     for e in epochs:
@@ -588,10 +580,10 @@ def main():
         # https://pytorch.org/tutorials/beginner/saving_loading_models.html
         # save the model at each epoch where the validation loss is the best so far
         if val_loss < min_valid_loss:
-            torch.save(model.state_dict(), saving_dir)
+            torch.save(model.state_dict(), saving_dir+'_ep_'+str(e.item()))
             min_valid_loss = val_loss
             patience_count = 0
-            best_epoch = e
+            best_epoch = e.item()
         else:
             patience_count += 1
             print('Didn\'t improve for {} epochs.'.format(patience_count))
@@ -600,23 +592,20 @@ def main():
             print("Reached {} epochs without improving. Finished training.".format(opt.patience))
             break
 
-    model.load_state_dict(torch.load(saving_dir))
+    model.load_state_dict(torch.load(saving_dir+'_ep_'+str(best_epoch)))
     model.eval()
 
     opt_threshold = fusion_threshold_optimization(model, dev_dataloader, gpu_id=opt.gpu_id)
 
     matrix = fusion_evaluate(model, test_dataloader, opt_threshold, gpu_id=opt.gpu_id)
-    matrix_dev = fusion_evaluate(model, dev_dataloader, opt_threshold, gpu_id=opt.gpu_id)
+    # matrix_dev = fusion_evaluate(model, dev_dataloader, opt_threshold, gpu_id=opt.gpu_id)
 
-    compute_save_metrics(matrix, matrix_dev, opt_threshold, training_date, best_epoch, "early", opt.path_save_model,
-                         opt.learning_rate, opt.optimizer, opt.dropout, opt.epochs, opt.hidden_size, opt.batch_size,
-                         test_id)
+    print(matrix)
+    metrics = compute_metrics(matrix, class_names=class_names, save_as=f'results/{model.__class__.__name__}')
+    print(metrics)
 
     # plot
-    plot_losses(valid_mean_losses, train_mean_losses, ylabel='Loss',
-                name="{}training-validation-loss-early_{}_ep{}_lr{}_opt{}_dr{}_eps{}_hs{}_bs{}_l2{}".format(
-                    opt.path_save_model, training_date, e.item(), opt.learning_rate, opt.optimizer, opt.dropout,
-                    opt.epochs, opt.hidden_size, opt.batch_size, opt.l2_decay))
+    plot_losses(valid_mean_losses, train_mean_losses, ylabel='Loss', name=f'results/figures/{model.__class__.__name__}_loss')
 
 
 if __name__ == '__main__':

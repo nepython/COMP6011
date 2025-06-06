@@ -8,14 +8,14 @@ from torch import nn
 from torch.utils.data import DataLoader
 
 from utils import configure_seed, configure_device, plot, compute_scores_dev, compute_scores, Dataset_for_RNN, \
-    plot_losses
+    plot_losses, compute_metrics
 
 from datetime import datetime
 import statistics
 import numpy as np
 import os
 from sklearn.metrics import roc_curve
-from config import samples
+from config import samples, class_weight, class_names
 
 
 class CNN1d_LSTM(nn.Module):
@@ -91,7 +91,7 @@ class CNN1d_LSTM(nn.Module):
 def train_batch(X, y, model, optimizer, criterion, gpu_id=None, **kwargs):
     """
     X (batch_size, 1000, 3): batch of examples
-    y (batch_size, 4): ground truth labels_train
+    y (batch_size, 5): ground truth labels_train
     model: Pytorch model
     optimizer: optimizer for the gradient step
     criterion: loss function
@@ -167,7 +167,7 @@ def threshold_optimization(model, dataloader, gpu_id=None):
     """
     model.eval()
     with torch.no_grad():
-        threshold_opt = np.zeros(4)
+        threshold_opt = np.zeros(5)
         for _, (X, Y) in enumerate(dataloader):
             X, Y = X.to(gpu_id), Y.to(gpu_id)
 
@@ -179,7 +179,7 @@ def threshold_optimization(model, dataloader, gpu_id=None):
 
             # find the optimal threshold with ROC curve for each disease
 
-            for dis in range(0, 4):
+            for dis in range(0, 5):
                 # print(probabilities[:, dis])
                 # print(Y[:, dis])
                 fpr, tpr, thresholds = roc_curve(Y[:, dis], probabilities[:, dis])
@@ -228,7 +228,7 @@ def main():
 
     input_size = 3
     hidden_size = opt.hidden_size
-    n_classes = 4
+    n_classes = 5
 
     # initialize the model
     model = CNN1d_LSTM(input_size, hidden_size, n_classes, dropout_rate=opt.dropout, gpu_id=opt.gpu_id)
@@ -248,7 +248,7 @@ def main():
     # get a loss criterion and compute the class weights (nbnegative/nbpositive)
     # according to the comments https://discuss.pytorch.org/t/weighted-binary-cross-entropy/51156/6
     # and https://discuss.pytorch.org/t/multi-label-multi-class-class-imbalance/37573/2
-    class_weights = torch.tensor([17111 / 4389, 17111 / 3136, 17111 / 1915, 17111 / 417], dtype=torch.float)
+    class_weights = torch.tensor(class_weight, dtype=torch.float)
     class_weights = class_weights.to(opt.gpu_id)
     criterion = nn.BCEWithLogitsLoss(
         pos_weight=class_weights)  # https://learnopencv.com/multi-label-image-classification-with-pytorch-image-tagging/
@@ -281,7 +281,7 @@ def main():
         # https://pytorch.org/tutorials/beginner/saving_loading_models.html
         # save the model at each epoch where the validation loss is the best so far
         if val_loss == np.min(valid_mean_losses):
-            f = os.path.join(opt.path_save_model, 'model' + str(ii.item()))
+            f = os.path.join(opt.path_save_model, model.__class__.__name__ + '_ep_'+ str(ii.item()))
             best_model = ii
             torch.save(model.state_dict(), f)
 
@@ -302,35 +302,12 @@ def main():
 
     # Results on test set:
     matrix = evaluate(model, test_dataloader, thr, gpu_id=opt.gpu_id)
+    print(matrix)
+    metrics = compute_metrics(matrix, class_names=class_names, save_as=f'results/{model.__class__.__name__}')
+    print(metrics)
 
-    classes = ["NORM", "AFIB", "AFLT", "1dAVb", "RBBB"]
-    sensitivities = []
-    specificities = []
-
-    # Compute sensitivity and specificity for each class
-    for i in range(len(classes)):
-        tp, fp, fn, tn = matrix[i]
-        sensi = tp / (tp + fn)
-        spec = tn / (tn + fp)
-        sensitivities.append(sensi)
-        specificities.append(spec)
-
-    # Compute mean sensitivity and specificity
-    mean_sensi = np.mean(matrix[:, 0]) / (np.mean(matrix[:, 0]) + np.mean(matrix[:, 2]))
-    mean_spec = np.mean(matrix[:, 3]) / (np.mean(matrix[:, 3]) + np.mean(matrix[:, 1]))
-
-    # Print results
-    print("Final Test Results:")
-    for i, cls in enumerate(classes):
-        print(f"{cls}: sensitivity - {sensitivities[i]:.2f}; specificity - {specificities[i]:.2f}")
-    print(f"mean: sensitivity - {mean_sensi:.2f}; specificity - {mean_spec:.2f}")
-
-    # Save to file
-    with open(f'results/model/{str(model.__class__.__name__)}.txt', 'w') as f:
-        f.write("Final Test Results:\n")
-        for i, cls in enumerate(classes):
-            f.write(f"{cls}: sensitivity - {sensitivities[i]:.2f}; specificity - {specificities[i]:.2f}\n")
-        f.write(f"mean: sensitivity - {mean_sensi:.2f}; specificity - {mean_spec:.2f}\n")
+    # plot
+    plot_losses(valid_mean_losses, train_mean_losses, ylabel='Loss', name=f'results/figures/{model.__class__.__name__}_loss')
 
     # plot
     epochs_axis = torch.arange(1, epochs_run + 1)

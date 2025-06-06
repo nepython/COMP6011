@@ -6,13 +6,13 @@ import argparse
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
-from utils import configure_seed, configure_device, plot, ECGImageDataset, compute_scores_dev, compute_scores, plot_losses
+from utils import configure_seed, configure_device, plot, ECGImageDataset, compute_scores_dev, compute_scores, plot_losses, compute_metrics
 #auxiliary functions to evaluate the performance of the model
 from sklearn.metrics import recall_score
 import statistics
 import numpy as np
 import os
-
+from config import samples, class_weight, class_names
 from sklearn.metrics import roc_curve
 
 #define a CNN based on the AlexNet model, 
@@ -67,7 +67,7 @@ class AlexNet(nn.Module):
 def train_batch(X, y, model, optimizer, criterion, gpu_id=None, **kwargs):
     """
     X (batch_size, 9, 256, 256): batch of examples
-    y (batch_size, 4): ground truth labels
+    y (batch_size, 5): ground truth labels
     model: Pytorch model
     optimizer: optimizer for the gradient step
     criterion: loss function
@@ -93,11 +93,11 @@ def evaluate(model, dataloader, thr, gpu_id=None):
     """
     model: Pytorch model
     X (batch_size, 1000, 3) : batch of examples
-    y (batch_size,4): ground truth labels_train
+    y (batch_size,5): ground truth labels_train
     """
     model.eval()  # set dropout and batch normalization layers to evaluation mode
     with torch.no_grad():
-        matrix = np.zeros((4, 4))
+        matrix = np.zeros((5, 5))
         for i, (x_batch, y_batch) in enumerate(dataloader):
             print('eval {} of {}'.format(i + 1, len(dataloader)), end='\r')
             x_batch, y_batch = x_batch.to(gpu_id), y_batch.to(gpu_id)
@@ -138,7 +138,7 @@ def threshold_optimization(model, dataloader, gpu_id=None):
     """
     model.eval()
     with torch.no_grad():
-        threshold_opt = np.zeros(4)
+        threshold_opt = np.zeros(5)
         for _, (X, Y) in enumerate(dataloader):
             X, Y = X.to(gpu_id), Y.to(gpu_id)
 
@@ -150,7 +150,7 @@ def threshold_optimization(model, dataloader, gpu_id=None):
 
             # find the optimal threshold with ROC curve for each disease
 
-            for dis in range(0, 4):
+            for dis in range(0, 5):
                 # print(probabilities[:, dis])
                 # print(Y[:, dis])
                 fpr, tpr, thresholds = roc_curve(Y[:, dis], probabilities[:, dis])
@@ -190,20 +190,17 @@ def main():
     configure_seed(seed=42)
     configure_device(opt.gpu_id)
 
-    # _examples_ = [17111,2156,2163]
-    _examples_ = [9672,1210,1226]
-
     print("Loading data...") ## input manual nexamples train, dev e test
-    train_dataset = ECGImageDataset(opt.data, _examples_, 'train')
-    dev_dataset = ECGImageDataset(opt.data, _examples_, 'dev')
-    test_dataset = ECGImageDataset(opt.data, _examples_, 'test')
+    train_dataset = ECGImageDataset(opt.data, samples, 'train')
+    dev_dataset = ECGImageDataset(opt.data, samples, 'dev')
+    test_dataset = ECGImageDataset(opt.data, samples, 'test')
 
     train_dataloader = DataLoader(train_dataset, batch_size=opt.batch_size, shuffle=True)
     dev_dataloader = DataLoader(dev_dataset, batch_size=opt.batch_size, shuffle=False)
     test_dataloader = DataLoader(test_dataset, batch_size=opt.batch_size, shuffle=False)
 
 
-    n_classes = 4  # 4 diseases + normal
+    n_classes = 5  # 5 diseases + normal
 
     # initialize the model
     model = AlexNet(n_classes)
@@ -223,7 +220,7 @@ def main():
     # get a loss criterion and compute the class weights (nbnegative/nbpositive)
     # according to the comments https://discuss.pytorch.org/t/weighted-binary-cross-entropy/51156/6
     # and https://discuss.pytorch.org/t/multi-label-multi-class-class-imbalance/37573/2
-    class_weights=torch.tensor([17111/4389, 17111/3136, 17111/1915, 17111/417],dtype=torch.float)  
+    class_weights=torch.tensor(class_weight,dtype=torch.float)  
     class_weights = class_weights.to(opt.gpu_id)
     criterion = nn.BCEWithLogitsLoss(pos_weight=class_weights) #https://learnopencv.com/multi-label-image-classification-with-pytorch-image-tagging/
     # https://pytorch.org/docs/stable/generated/torch.nn.BCEWithLogitsLoss.html
@@ -264,22 +261,26 @@ def main():
         
         if val_loss<last_valid_loss:
             #https://pytorch.org/tutorials/beginner/saving_loading_models.html (save the best model based on the validation loss)
-            torch.save(model.state_dict(), os.path.join(opt.path_save_model, 'model'+ str(ii.item())))
+            torch.save(model.state_dict(), os.path.join(opt.path_save_model, model.__class__.__name__ + '_ep_'+ str(ii.item())))
             last_valid_loss = val_loss
             patience_count = 0
         else:
         	patience_count += 1            
 
         if patience_count==20:
-        	plot_losses(epochs_plot, valid_mean_losses, train_mean_losses, ylabel='Loss', name='training-validation-loss-{}-{}'.format(opt.learning_rate, opt.optimizer))
+        	plot_losses(valid_mean_losses, train_mean_losses, ylabel='Loss', name='training-validation-loss-{}-{}'.format(opt.learning_rate, opt.optimizer))
         	break            
             
             
-    print('Final Test Results:')
+    # Results on test set:
     thr = threshold_optimization(model, test_dataloader, gpu_id=opt.gpu_id)
-    print(evaluate(model, test_dataloader, thr, gpu_id=opt.gpu_id))
+    matrix = evaluate(model, test_dataloader, thr, gpu_id=opt.gpu_id)
+    print(matrix)
+    metrics = compute_metrics(matrix, class_names=class_names, save_as=f'results/{model.__class__.__name__}')
+    print(metrics)
+
     # plot
-    plot_losses(epochs_plot, valid_mean_losses, train_mean_losses, ylabel='Loss', name='training-validation-loss-{}-{}'.format(opt.learning_rate, opt.optimizer))
+    plot_losses(valid_mean_losses, train_mean_losses, ylabel='Loss', name=f'results/figures/{model.__class__.__name__}_loss')
 
 if __name__ == '__main__':
     main()

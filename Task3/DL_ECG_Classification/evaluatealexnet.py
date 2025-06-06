@@ -21,7 +21,7 @@ test_dataset = ECGImageDataset('/dev/shm/dataset', samples, 'test')
 dev_dataset = ECGImageDataset('/dev/shm/dataset', samples, 'dev')
 
 test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False)
-dev_dataloader = DataLoader(dev_dataset, batch_size=2156, shuffle=False)
+dev_dataloader = DataLoader(dev_dataset, batch_size=256, shuffle=False)
 
 # Threshold optimization on validation set
 thr = threshold_optimization(model, dev_dataloader, gpu_id=None)
