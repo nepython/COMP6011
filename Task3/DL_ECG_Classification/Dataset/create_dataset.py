@@ -30,13 +30,13 @@ if opt.only_test != 'true':
 # save X_rnn_test
 X_for_RNNs(processed_directory, 'test', save_dir=path_to_save)
 
-if opt.only_test != 'true':
-    # save X_cnn_train
-    X_for_CNNs(processed_directory, 'train', save_dir=path_to_save)
-    # save X_cnn_dev
-    X_for_CNNs(processed_directory, 'dev', save_dir=path_to_save)
-# save X_cnn_test
-X_for_CNNs(processed_directory, 'test', save_dir=path_to_save)
+# if opt.only_test != 'true':
+#     # save X_cnn_train
+#     X_for_CNNs(processed_directory, 'train', save_dir=path_to_save)
+#     # save X_cnn_dev
+#     X_for_CNNs(processed_directory, 'dev', save_dir=path_to_save)
+# # save X_cnn_test
+# X_for_CNNs(processed_directory, 'test', save_dir=path_to_save)
 
 if opt.only_test != 'true':
     # save labels_train

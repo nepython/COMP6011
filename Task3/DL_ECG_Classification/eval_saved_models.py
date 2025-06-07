@@ -32,7 +32,7 @@ def main():
     # choose the model for evaluation on test set
     if opt.model == 'rnn':
         # RNN
-        model_rnn = RNN(input_size=3, hidden_size=256, num_layers=2, n_classes=5, dropout_rate=0, gpu_id=gpu_id,
+        model_rnn = RNN(input_size=12, hidden_size=256, num_layers=2, n_classes=5, dropout_rate=0, gpu_id=gpu_id,
                           bidirectional=False)
         model_rnn.load_state_dict(
             torch.load(opt.path or 'best_trained_rnns/rnn_1669240561.183005model28'))
@@ -46,7 +46,7 @@ def main():
         model = model_lstm.to(opt.gpu_id)
     elif opt.model == 'gru':
         # GRU
-        model_gru = GRU(3, hidden_size=256, num_layers=2, n_classes=5, dropout_rate=0, gpu_id=gpu_id,
+        model_gru = GRU(12, hidden_size=256, num_layers=2, n_classes=5, dropout_rate=0, gpu_id=gpu_id,
                         bidirectional=False)
         model_gru.load_state_dict(
             torch.load(opt.path or 'best_trained_rnns/gru_3layers_dropout0_model8'))

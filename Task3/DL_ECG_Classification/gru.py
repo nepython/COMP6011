@@ -117,7 +117,7 @@ def evaluate(model, dataloader, thr, gpu_id=None):
     """
     model.eval()  # set dropout and batch normalization layers to evaluation mode
     with torch.no_grad():
-        matrix = np.zeros((5, 5))
+        matrix = np.zeros((5, 4))
         for i, (x_batch, y_batch) in enumerate(dataloader):
             print('eval {} of {}'.format(i + 1, len(dataloader)), end='\r')
             x_batch, y_batch = x_batch.to(gpu_id), y_batch.to(gpu_id)
@@ -141,15 +141,18 @@ def evaluate_with_norm(model, dataloader, thr, gpu_id=None):
     X (batch_size, 1000, 3) : batch of examples
     y (batch_size, 5): ground truth labels_train
     """
-    model.eval()  # set dropout and batch normalization layers to evaluation mode
+    model.eval()
     with torch.no_grad():
-        matrix = np.zeros((5, 5))
-        norm_vec = np.zeros(5)
+        matrix = np.zeros((5, 4))
+        norm_vec = np.zeros(4)
         for i, (x_batch, y_batch) in enumerate(dataloader):
-            print('eval {} of {}'.format(i + 1, len(dataloader)), end='\r')
+            # print('eval {} of {}'.format(i + 1, len(dataloader)), end='\r')
             x_batch, y_batch = x_batch.to(gpu_id), y_batch.to(gpu_id)
             y_pred = predict(model, x_batch, thr)
             y_true = np.array(y_batch.cpu())
+            # print(y_true)
+            # print(y_pred)
+            # print()
             matrix, norm_vec = compute_scores_with_norm(y_true, y_pred, matrix, norm_vec)
 
             del x_batch
@@ -285,7 +288,7 @@ def main():
     test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False)
     dev_dataloader_thr = DataLoader(dev_dataset, batch_size=1024, shuffle=False)
 
-    input_size = 3
+    input_size = 12
     hidden_size = opt.hidden_size
     num_layers = opt.num_layers
     n_classes = 5

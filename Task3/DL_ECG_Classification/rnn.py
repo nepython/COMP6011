@@ -58,6 +58,7 @@ class RNN(nn.Module):
 
         # decode the hidden state of only the last timestep (other approaches are possible, such as the mean of all states, ..)
         out_rnn = out_rnn[:, -1, :]
+        # out_rnn = out_rnn.mean(dim=1)
         # out_rnn shape: (batch_size, hidden_size) - ready to enter the fc layer
 
         out_fc = self.fc(out_rnn)
@@ -84,13 +85,13 @@ def train_batch(X, y, model, optimizer, criterion, gpu_id=None, **kwargs):
     return loss.item()
 
 
-def predict(model, X):
+def predict(model, X, threshold = 0.35):
     """
     Make labels_train predictions for "X" (batch_size, 1000, 3)
     """
     logits_ = model(X)  # (batch_size, n_classes)
     probabilities = torch.sigmoid(logits_).cpu()
-    pred_labels = np.array(probabilities > 0.5, dtype=float)  # (batch_size, n_classes)
+    pred_labels = np.array(probabilities > threshold, dtype=float)  # (batch_size, n_classes)
     return pred_labels
 
 
@@ -102,13 +103,13 @@ def evaluate(model, dataloader, part, gpu_id=None):
     """
     model.eval()
     with torch.no_grad():
-        matrix = np.zeros((5, 5))
+        matrix = np.zeros((5, 4))
         for i, (x_batch, y_batch) in enumerate(dataloader):
-            print('eval {} of {}'.format(i + 1, len(dataloader)), end='\r')
+            # print('eval {} of {}'.format(i + 1, len(dataloader)), end='\r')
             x_batch, y_batch = x_batch.to(gpu_id), y_batch.to(gpu_id)
             y_pred = predict(model, x_batch)
             y_true = np.array(y_batch.cpu())
-            matrix = compute_scores(y_true, y_pred, matrix)
+            matrix += compute_scores(y_true, y_pred, matrix)
 
             del x_batch
             del y_batch
@@ -119,7 +120,7 @@ def evaluate(model, dataloader, part, gpu_id=None):
     if part == 'dev':
         return compute_scores_dev(matrix)
     if part == 'test':
-        return matrix
+        return matrix.astype(int)
         # cols: TP, FN, FP, TN
 
 
@@ -172,10 +173,10 @@ def main():
     test_dataset = Dataset_for_RNN(opt.data, samples, 'test')
 
     train_dataloader = DataLoader(train_dataset, batch_size=opt.batch_size, shuffle=True)
-    dev_dataloader = DataLoader(dev_dataset, batch_size=1, shuffle=False)
-    test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False)
+    dev_dataloader = DataLoader(dev_dataset, batch_size=opt.batch_size, shuffle=False)
+    test_dataloader = DataLoader(test_dataset, batch_size=opt.batch_size, shuffle=False)
 
-    input_size = 3
+    input_size = 12
     hidden_size = opt.hidden_size
     num_layers = opt.num_layers
     n_classes = 5
@@ -236,13 +237,13 @@ def main():
         valid_sensitivity.append(sensitivity)
         valid_specificity.append(specificity)
         print('Valid specificity: %.4f' % (valid_specificity[-1]))
-        print('Valid sensitivity: %.4f' % (valid_sensitivity[-1]))
+        print('Valid sensitivity: %.4f' % (valid_sensitivity[-1]), '\n')
 
         dt = datetime.now()
         # https://pytorch.org/tutorials/beginner/saving_loading_models.html (save the model at the end of each epoch)
-        if val_loss == np.min(valid_mean_losses):
-            torch.save(model.state_dict(), os.path.join(opt.path_save_model, model.__class__.__name__ + '_ep_'+ str(ii.item())))
-        elif sensitivity == np.max(valid_sensitivity):
+        # if val_loss == np.min(valid_mean_losses):
+        #     torch.save(model.state_dict(), os.path.join(opt.path_save_model, model.__class__.__name__ + '_ep_'+ str(ii.item())))
+        if sensitivity == np.max(valid_sensitivity):
             torch.save(model.state_dict(), os.path.join(opt.path_save_model, model.__class__.__name__ + '_ep_'+ str(ii.item())))
 
     # Results on test set:

@@ -177,47 +177,23 @@ def computetpfnfp(pred, gt, i, matrix):
     return matrix
 
 def compute_metrics(matrix, class_names=None, save_as=None):
-    # Ensure matrix is square
-    assert matrix.shape[0] == matrix.shape[1], "Confusion matrix must be square"
-
     n = matrix.shape[0]
     if class_names is None:
         class_names = [f"Class {i}" for i in range(n)]
     assert len(class_names) == n, "Length of class_names must match matrix dimensions"
 
-    sensitivity = []
-    specificity = []
-    accuracy = []
-    precision = []
-    f1 = []
-
-    total = np.sum(matrix)
-
-    for i in range(n):
-        TP = matrix[i, i]
-        FN = np.sum(matrix[i, :]) - TP
-        FP = np.sum(matrix[:, i]) - TP
-        TN = total - TP - FP - FN
-
-        # Sensitivity (Recall or True Positive Rate)
-        sens = TP / (TP + FN) if (TP + FN) > 0 else 0
-        sensitivity.append(sens)
-
-        # Specificity (True Negative Rate)
-        spec = TN / (TN + FP) if (TN + FP) > 0 else 0
-        specificity.append(spec)
-
-        # Accuracy
-        acc = (TP + TN) / total if total > 0 else 0
-        accuracy.append(acc)
-
-        # Precision (Positive Predictive Value)
-        prec = TP / (TP + FP) if (TP + FP) > 0 else 0
-        precision.append(prec)
-
-        # F1 Score
-        f1_score = 2 * prec * sens / (prec + sens) if (prec + sens) > 0 else 0
-        f1.append(f1_score)
+    # matrix shape: (n_classes, 4) — columns = [TP, FP, FN, TN]
+    TP = matrix[:, 0]
+    FN = matrix[:, 1]
+    FP = matrix[:, 2]
+    TN = matrix[:, 3]
+    
+    # Avoid division by zero with np.where
+    sensitivity = np.where((TP + FN) > 0, TP / (TP + FN), 0)
+    specificity = np.where((TN + FP) > 0, TN / (TN + FP), 0)
+    accuracy    = np.where((TP + FP + FN + TN) > 0, (TP + TN) / (TP + FP + FN + TN), 0)
+    precision   = np.where((TP + FP) > 0, TP / (TP + FP), 0)
+    f1          = np.where((precision + sensitivity) > 0, 2 * precision * sensitivity / (precision + sensitivity), 0)
 
     # Create DataFrame
     data = {
