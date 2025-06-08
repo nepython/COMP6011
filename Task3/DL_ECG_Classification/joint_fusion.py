@@ -39,7 +39,6 @@ class JointFusionNet(nn.Module):
 
         self.sig_model = sig_model
         self.img_model = img_model
-
         self.fc_img = nn.Linear(img_features, sig_features * 3)
 
         self.fc1 = nn.Linear(sig_features * 4, hidden_size * 2)
@@ -55,7 +54,6 @@ class JointFusionNet(nn.Module):
 
         sig_out = self.sig_model(X_sig)
         img_out = self.img_model(X_img)
-
         x_img = self.dropout(self.relu(self.fc_img(img_out)))
 
         X = torch.cat((sig_out, x_img), dim=1)
@@ -90,7 +88,7 @@ def training_joint(gpu_id, sig_type, img_type, signal_data, image_data, dropout,
         num_layers = 2
         dropout_rate = 0.3
 
-        sig_model = gru.GRU(3, hidden_size_, num_layers, 5, dropout_rate, gpu_id=gpu_id,
+        sig_model = gru.GRU(12, hidden_size_, num_layers, 5, dropout_rate, gpu_id=gpu_id,
                             bidirectional=False).to(gpu_id)
     elif sig_type == 'bigru':
         sig_path = 'save_models/grubi_dropout05_lr0005_model5'
@@ -98,7 +96,7 @@ def training_joint(gpu_id, sig_type, img_type, signal_data, image_data, dropout,
         num_layers = 2
         dropout_rate = 0.5
 
-        sig_model = gru.GRU(3, hidden_size_, num_layers, 5, dropout_rate, gpu_id=gpu_id,
+        sig_model = gru.GRU(12, hidden_size_, num_layers, 5, dropout_rate, gpu_id=gpu_id,
                             bidirectional=True).to(gpu_id)
     else:
         raise ValueError('1D model is not defined.')
@@ -122,7 +120,11 @@ def training_joint(gpu_id, sig_type, img_type, signal_data, image_data, dropout,
     img_model.linear_3 = Identity()  # applied on the last dense layer only
 
     sig_features = 256
-    img_features = 2048  # 9216, 4096, 2048
+    if img_type=='alexnet':
+        img_features = 2048  # 9216, 4096, 2048
+    elif img_type=='resnet':
+        img_model.fc = nn.Identity()
+        img_features = 512
 
     # LOAD DATA
     train_dataset = early.FusionDataset(signal_data, image_data, samples, part='train')
@@ -130,8 +132,8 @@ def training_joint(gpu_id, sig_type, img_type, signal_data, image_data, dropout,
     test_dataset = early.FusionDataset(signal_data, image_data, samples, part='test')
 
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=False)
-    dev_dataloader = DataLoader(dev_dataset, batch_size=1, shuffle=False)
-    test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False)
+    dev_dataloader = DataLoader(dev_dataset, batch_size=opt.batch_size, shuffle=False)
+    test_dataloader = DataLoader(test_dataset, batch_size=opt.batch_size, shuffle=False)
 
     model = JointFusionNet(5, sig_features, img_features, hidden_size, dropout,
                            sig_model, img_model).to(gpu_id)
@@ -272,7 +274,7 @@ def main():
         num_layers = 2
         dropout_rate = 0.3
 
-        sig_model = gru.GRU(3, hidden_size, num_layers, 5, dropout_rate, gpu_id=opt.gpu_id,
+        sig_model = gru.GRU(12, hidden_size, num_layers, 5, dropout_rate, gpu_id=opt.gpu_id,
                             bidirectional=False).to(opt.gpu_id)
     elif sig_type == 'bigru':
         sig_path = 'save_models/grubi_dropout05_lr0005_model5'
@@ -280,7 +282,7 @@ def main():
         num_layers = 2
         dropout_rate = 0.5
 
-        sig_model = gru.GRU(3, hidden_size, num_layers, 5, dropout_rate, gpu_id=opt.gpu_id,
+        sig_model = gru.GRU(12, hidden_size, num_layers, 5, dropout_rate, gpu_id=opt.gpu_id,
                             bidirectional=True).to(opt.gpu_id)
     else:
         raise ValueError('1D model is not defined.')
@@ -304,7 +306,11 @@ def main():
     img_model.linear_3 = Identity()  # applied on the last dense layer only
 
     sig_features = 256
-    img_features = 2048  # 9216, 4096, 2048
+    if img_type=='alexnet':
+        img_features = 2048  # 9216, 4096, 2048
+    elif img_type=='resnet':
+        img_model.fc = nn.Identity()
+        img_features = 512
 
     # LOAD DATA
     train_dataset = early.FusionDataset(opt.signal_data, opt.image_data, samples, part='train')
@@ -312,8 +318,8 @@ def main():
     test_dataset = early.FusionDataset(opt.signal_data, opt.image_data, samples, part='test')
 
     train_dataloader = DataLoader(train_dataset, batch_size=opt.batch_size, shuffle=False)
-    dev_dataloader = DataLoader(dev_dataset, batch_size=1, shuffle=False)
-    test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False)
+    dev_dataloader = DataLoader(dev_dataset, batch_size=opt.batch_size, shuffle=False)
+    test_dataloader = DataLoader(test_dataset, batch_size=opt.batch_size, shuffle=False)
 
     model = JointFusionNet(5, sig_features, img_features, opt.hidden_size, opt.dropout,
                            sig_model, img_model).to(opt.gpu_id)

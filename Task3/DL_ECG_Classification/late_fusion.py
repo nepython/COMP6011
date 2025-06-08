@@ -372,7 +372,7 @@ def main():
         num_layers = 2
         dropout_rate = 0.3
 
-        sig_model = gru.GRU(3, hidden_size, num_layers, 5, dropout_rate, gpu_id=opt.gpu_id,
+        sig_model = gru.GRU(12, hidden_size, num_layers, 5, dropout_rate, gpu_id=opt.gpu_id,
                             bidirectional=False).to(opt.gpu_id)
     elif sig_type == 'bigru':
         sig_path = 'save_models/grubi_dropout05_lr0005_model5'
@@ -391,7 +391,7 @@ def main():
         img_model = alexnet.AlexNet(5).to(opt.gpu_id)
 
     elif img_type == 'resnet':
-        img_path = 'Models/ResNet'
+        img_path = 'Models/ResNet_ep_29'
         img_model = resnet.ResNet50(5).to(opt.gpu_id)
 
     else:

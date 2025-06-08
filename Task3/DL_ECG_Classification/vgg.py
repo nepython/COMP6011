@@ -17,7 +17,7 @@ import os
 from torch.nn import functional as F
 from config import samples
 
-#based on https://medium.com/@tioluwaniaremu/vgg-16-a-simple-implementation-using-pytorch-7850be4d14a1 (visited on May 22, 2022)
+# Based on https://medium.com/@tioluwaniaremu/vgg-16-a-simple-implementation-using-pytorch-7850be4d14a1 (visited on May 22, 2022)
 class VGG16(nn.Module):
     def __init__(self, n_classes, **kwargs):
         super(VGG16, self).__init__()

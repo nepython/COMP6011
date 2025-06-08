@@ -7,14 +7,13 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader
 
-from utils import configure_seed, configure_device, compute_scores, Dataset_for_RNN, \
-    plot_losses, compute_scores_with_norm, compute_metrics
+from utils import configure_seed, configure_device, compute_scores, compute_scores_dev, Dataset_for_RNN, \
+    plot_losses, plot, compute_scores_with_norm, compute_metrics, train_batch, predict, evaluate, \
+    evaluate_with_norm, auroc, compute_loss, threshold_optimization
 
 from datetime import datetime
-import statistics
 import numpy as np
 import os
-from sklearn.metrics import roc_curve
 from torchmetrics.classification import MultilabelAUROC
 from config import samples, class_weight, class_names
 
@@ -78,180 +77,6 @@ class GRU(nn.Module):
 
         return out_fc
 
-
-def train_batch(X, y, model, optimizer, criterion, gpu_id=None, **kwargs):
-    """
-    X (batch_size, 1000, 3): batch of examples
-    y (batch_size, 5): ground truth labels_train
-    model: Pytorch model
-    optimizer: optimizer for the gradient step
-    criterion: loss function
-    """
-    X, y = X.to(gpu_id), y.to(gpu_id)
-    optimizer.zero_grad()
-    out = model(X, **kwargs)
-    loss = criterion(out, y)
-    loss.backward()
-    optimizer.step()
-    return loss.item()
-
-
-def predict(model, X, thr):
-    """
-    Make labels_train predictions for "X" (batch_size, 1000, 3)
-    """
-    logits_ = model(X)  # (batch_size, n_classes)
-    probabilities = torch.sigmoid(logits_).cpu()
-
-    if thr is None:
-        return probabilities
-    else:
-        return np.array(probabilities.numpy() >= thr, dtype=float)
-
-
-def evaluate(model, dataloader, thr, gpu_id=None):
-    """
-    model: Pytorch model
-    X (batch_size, 1000, 3) : batch of examples
-    y (batch_size, 5): ground truth labels_train
-    """
-    model.eval()  # set dropout and batch normalization layers to evaluation mode
-    with torch.no_grad():
-        matrix = np.zeros((5, 4))
-        for i, (x_batch, y_batch) in enumerate(dataloader):
-            print('eval {} of {}'.format(i + 1, len(dataloader)), end='\r')
-            x_batch, y_batch = x_batch.to(gpu_id), y_batch.to(gpu_id)
-            y_pred = predict(model, x_batch, thr)
-            y_true = np.array(y_batch.cpu())
-            matrix = compute_scores(y_true, y_pred, matrix)
-
-            del x_batch
-            del y_batch
-            torch.cuda.empty_cache()
-
-        model.train()
-
-    return matrix
-    # cols: TP, FN, FP, TN
-
-
-def evaluate_with_norm(model, dataloader, thr, gpu_id=None):
-    """
-    model: Pytorch model
-    X (batch_size, 1000, 3) : batch of examples
-    y (batch_size, 5): ground truth labels_train
-    """
-    model.eval()
-    with torch.no_grad():
-        matrix = np.zeros((5, 4))
-        norm_vec = np.zeros(4)
-        for i, (x_batch, y_batch) in enumerate(dataloader):
-            # print('eval {} of {}'.format(i + 1, len(dataloader)), end='\r')
-            x_batch, y_batch = x_batch.to(gpu_id), y_batch.to(gpu_id)
-            y_pred = predict(model, x_batch, thr)
-            y_true = np.array(y_batch.cpu())
-            # print(y_true)
-            # print(y_pred)
-            # print()
-            matrix, norm_vec = compute_scores_with_norm(y_true, y_pred, matrix, norm_vec)
-
-            del x_batch
-            del y_batch
-            torch.cuda.empty_cache()
-
-        model.train()
-
-    return matrix, norm_vec
-    # cols: TP, FN, FP, TN
-
-
-def auroc(model, dataloader, gpu_id=None):
-    """
-    model: Pytorch model
-    X (batch_size, 1000, 3) : batch of examples
-    y (batch_size, 5): ground truth labels_train
-    """
-    model.eval()  # set dropout and batch normalization layers to evaluation mode
-    with torch.no_grad():
-        preds = []
-        trues = []
-        for i, (x_batch, y_batch) in enumerate(dataloader):
-            # print('eval {} of {}'.format(i + 1, len(dataloader)), end='\r')
-            x_batch, y_batch = x_batch.to(gpu_id), y_batch.to(gpu_id)
-
-            preds += predict(model, x_batch, None)
-            trues += [y_batch.cpu()[0]]
-
-            del x_batch
-            del y_batch
-            torch.cuda.empty_cache()
-
-    preds = torch.stack(preds)
-    trues = torch.stack(trues).int()
-    return MultilabelAUROC(num_labels=5, average=None)(preds, trues)
-    # cols: TP, FN, FP, TN
-
-
-# Validation loss
-def compute_loss(model, dataloader, criterion, gpu_id=None):
-    model.eval()
-    with torch.no_grad():
-        val_losses = []
-        for i, (x_batch, y_batch) in enumerate(dataloader):
-            # print('eval {} of {}'.format(i + 1, len(dataloader)), end='\r')
-            x_batch, y_batch = x_batch.to(gpu_id), y_batch.to(gpu_id)
-            y_pred = model(x_batch)
-            loss = criterion(y_pred, y_batch)
-            val_losses.append(loss.item())
-            del x_batch
-            del y_batch
-            torch.cuda.empty_cache()
-
-        model.train()
-
-        return statistics.mean(val_losses)
-
-
-def threshold_optimization(model, dataloader, gpu_id=None):
-    """
-    Make labels_train predictions for "X" (batch_size, 1000, 3)
-    """
-    save_probs = []
-    save_y = []
-    threshold_opt = np.zeros(5)
-
-    model.eval()
-    with torch.no_grad():
-        #threshold_opt = np.zeros(5)
-        for _, (X, Y) in enumerate(dataloader):
-            X, Y = X.to(gpu_id), Y.to(gpu_id)
-
-            Y = np.array(Y.cpu())
-            #print(Y)
-
-            logits_ = model(X)  # (batch_size, n_classes)
-            probabilities = torch.sigmoid(logits_).cpu()
-
-            save_probs += [probabilities.numpy()]
-            save_y += [Y]
-
-    # find the optimal threshold with ROC curve for each disease
-
-    save_probs = np.array(np.concatenate(save_probs)).reshape((-1, 5))
-    save_y = np.array(np.concatenate(save_y)).reshape((-1, 5))
-    for dis in range(0, 5):
-        # print(probabilities[:, dis])
-        # print(Y[:, dis])
-        fpr, tpr, thresholds = roc_curve(save_y[:, dis], save_probs[:, dis])
-        # geometric mean of sensitivity and specificity
-        gmean = np.sqrt(tpr * (1 - fpr))
-        # optimal threshold
-        index = np.argmax(gmean)
-        threshold_opt[dis] = round(thresholds[index], ndigits=2)
-
-    return threshold_opt
-
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-data', default='data_for_rnn/',
@@ -272,7 +97,7 @@ def main():
     parser.add_argument('-hidden_size', type=int, default=256)
     parser.add_argument('-bidirectional', type=bool, default=False)
     parser.add_argument('-early_stop', type=bool, default=True)
-    parser.add_argument('-patience', type=int, default=20)
+    parser.add_argument('-patience', type=int, default=10)
     opt = parser.parse_args()
 
     configure_seed(seed=42)
@@ -284,8 +109,8 @@ def main():
     test_dataset = Dataset_for_RNN(opt.data, samples, 'test')
 
     train_dataloader = DataLoader(train_dataset, batch_size=opt.batch_size, shuffle=True)
-    dev_dataloader = DataLoader(dev_dataset, batch_size=1, shuffle=False)
-    test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False)
+    dev_dataloader = DataLoader(dev_dataset, batch_size=opt.batch_size, shuffle=False)
+    test_dataloader = DataLoader(test_dataset, batch_size=opt.batch_size, shuffle=False)
     dev_dataloader_thr = DataLoader(dev_dataset, batch_size=1024, shuffle=False)
 
     input_size = 12
@@ -322,6 +147,8 @@ def main():
     epochs = torch.arange(1, opt.epochs + 1)
     train_mean_losses = []
     valid_mean_losses = []
+    valid_specificity = []
+    valid_sensitivity = []
     train_losses = []
     epochs_run = opt.epochs
     for ii in epochs:
@@ -338,13 +165,21 @@ def main():
         print('Training loss: %.4f' % (mean_loss))
 
         train_mean_losses.append(mean_loss)
+        # Threshold optimization on validation set
+        thr = threshold_optimization(model, dev_dataloader_thr)
+        matrix = evaluate(model, dev_dataloader, thr, gpu_id=opt.gpu_id)
+        sensitivity, specificity = compute_scores_dev(matrix)
         val_loss = compute_loss(model, dev_dataloader, criterion, gpu_id=opt.gpu_id)
         valid_mean_losses.append(val_loss)
+        valid_sensitivity.append(sensitivity)
+        valid_specificity.append(specificity)
+        print('Valid specificity: %.4f' % (valid_specificity[-1]))
+        print('Valid sensitivity: %.4f' % (valid_sensitivity[-1]), '\n')
 
         dt = datetime.now()
         # https://pytorch.org/tutorials/beginner/saving_loading_models.html
         # save the model at each epoch where the validation loss is the best so far
-        if val_loss == np.min(valid_mean_losses):
+        if sensitivity == np.max(valid_sensitivity):
             f = os.path.join(opt.path_save_model, model.__class__.__name__ + '_ep_'+ str(ii.item()))
             best_model = ii
             torch.save(model.state_dict(), f)
@@ -372,7 +207,10 @@ def main():
 
     # plot
     plot_losses(valid_mean_losses, train_mean_losses, ylabel='Loss', name=f'results/figures/{model.__class__.__name__}_loss')
-
+    plot(valid_specificity, ylabel='Specificity',
+         name=f'results/figures/{model.__class__.__name__}_val_specificity')
+    plot(valid_sensitivity, ylabel='Sensitivity',
+         name=f'results/figures/{model.__class__.__name__}_val_sensitivity')
 
 if __name__ == '__main__':
     main()

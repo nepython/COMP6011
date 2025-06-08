@@ -1,6 +1,6 @@
 # Pre-processing of data (X) to be used in the RNNs:
 #   1) filter the ecg signal (band pass filter)
-#   2) select 3 leads (I, II, V2)
+#   2) select all 12 leads
 #   3) normalize
 
 import numpy as np
@@ -8,6 +8,7 @@ import pickle
 import os
 from scipy.signal import butter, sosfilt
 from scipy.stats import zscore
+from tqdm import tqdm
 
 
 def X_for_RNNs(path, partition='train', save_dir=None):
@@ -21,25 +22,8 @@ def X_for_RNNs(path, partition='train', save_dir=None):
 
     X_aux = np.zeros((np.shape(X)[0], np.shape(X)[1], 12))
 
-    for i in range(np.shape(X)[0]):
+    for i in tqdm(range(np.shape(X)[0]), desc='1D processing'):
 
-        # lead_I = X[i][:, 0]  # X[i]: (1000, 12)
-        # lead_II = X[i][:, 1]
-        # lead_V2 = X[i][:, 7]
-
-        # # apply a band pass filter (0.05, 40hz)
-        # lead_I = sosfilt(band_pass_filter, lead_I)
-        # lead_II = sosfilt(band_pass_filter, lead_II)
-        # lead_V2 = sosfilt(band_pass_filter, lead_V2)
-
-        # # normalize before transforming into images
-        # lead_I = ecgnorm(lead_I)
-        # lead_II = ecgnorm(lead_II)
-        # lead_V2 = ecgnorm(lead_V2)
-
-        # X_aux[i][:, 0] = lead_I
-        # X_aux[i][:, 1] = lead_II
-        # X_aux[i][:, 2] = lead_V2
         for l in range(12):
             lead = X[i][:, l]
     

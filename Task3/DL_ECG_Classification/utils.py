@@ -7,10 +7,12 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import torch
-from torch.utils.data import Dataset
 import csv
 import tifffile
+import statistics
 
+from torch.utils.data import Dataset
+from sklearn.metrics import roc_curve
 
 def configure_device(gpu_id):
     if gpu_id is not None:
@@ -122,6 +124,178 @@ def read_data_for_RNN(path, partition, idx):
     X = np.load(str(path_X) + "/" + str(index) + ".npy")
     return X, label
 
+
+def train_batch(X, y, model, optimizer, criterion, gpu_id=None, **kwargs):
+    """
+    X (batch_size, 1000, 3): batch of examples
+    y (batch_size, 5): ground truth labels_train
+    model: Pytorch model
+    optimizer: optimizer for the gradient step
+    criterion: loss function
+    """
+    X, y = X.to(gpu_id), y.to(gpu_id)
+    optimizer.zero_grad()
+    out = model(X, **kwargs)
+    loss = criterion(out, y)
+    loss.backward()
+    optimizer.step()
+    return loss.item()
+
+
+def predict(model, X, thr):
+    """
+    Make labels_train predictions for "X" (batch_size, 1000, 3)
+    """
+    logits_ = model(X)  # (batch_size, n_classes)
+    probabilities = torch.sigmoid(logits_).cpu()
+
+    if thr is None:
+        return probabilities
+    else:
+        return np.array(probabilities.numpy() >= thr, dtype=float)
+
+
+def evaluate(model, dataloader, thr, gpu_id=None):
+    """
+    model: Pytorch model
+    X (batch_size, 1000, 3) : batch of examples
+    y (batch_size, 5): ground truth labels_train
+    """
+    model.eval()  # set dropout and batch normalization layers to evaluation mode
+    with torch.no_grad():
+        matrix = np.zeros((5, 4))
+        for i, (x_batch, y_batch) in enumerate(dataloader):
+            print('eval {} of {}'.format(i + 1, len(dataloader)), end='\r')
+            x_batch, y_batch = x_batch.to(gpu_id), y_batch.to(gpu_id)
+            y_pred = predict(model, x_batch, thr)
+            y_true = np.array(y_batch.cpu())
+            matrix = compute_scores(y_true, y_pred, matrix)
+
+            del x_batch
+            del y_batch
+            torch.cuda.empty_cache()
+
+        model.train()
+
+    return matrix
+    # cols: TP, FN, FP, TN
+
+
+def evaluate_with_norm(model, dataloader, thr, gpu_id=None):
+    """
+    model: Pytorch model
+    X (batch_size, 1000, 3) : batch of examples
+    y (batch_size, 5): ground truth labels_train
+    """
+    model.eval()
+    with torch.no_grad():
+        matrix = np.zeros((5, 4))
+        norm_vec = np.zeros(4)
+        for i, (x_batch, y_batch) in enumerate(dataloader):
+            # print('eval {} of {}'.format(i + 1, len(dataloader)), end='\r')
+            x_batch, y_batch = x_batch.to(gpu_id), y_batch.to(gpu_id)
+            y_pred = predict(model, x_batch, thr)
+            y_true = np.array(y_batch.cpu())
+            # print(y_true)
+            # print(y_pred)
+            # print()
+            matrix, norm_vec = compute_scores_with_norm(y_true, y_pred, matrix, norm_vec)
+
+            del x_batch
+            del y_batch
+            torch.cuda.empty_cache()
+
+        model.train()
+
+    return matrix, norm_vec
+    # cols: TP, FN, FP, TN
+
+
+def auroc(model, dataloader, gpu_id=None):
+    """
+    model: Pytorch model
+    X (batch_size, 1000, 3) : batch of examples
+    y (batch_size, 5): ground truth labels_train
+    """
+    model.eval()  # set dropout and batch normalization layers to evaluation mode
+    with torch.no_grad():
+        preds = []
+        trues = []
+        for i, (x_batch, y_batch) in enumerate(dataloader):
+            # print('eval {} of {}'.format(i + 1, len(dataloader)), end='\r')
+            x_batch, y_batch = x_batch.to(gpu_id), y_batch.to(gpu_id)
+
+            preds += predict(model, x_batch, None)
+            trues += [y_batch.cpu()[0]]
+
+            del x_batch
+            del y_batch
+            torch.cuda.empty_cache()
+
+    preds = torch.stack(preds)
+    trues = torch.stack(trues).int()
+    return MultilabelAUROC(num_labels=5, average=None)(preds, trues)
+    # cols: TP, FN, FP, TN
+
+
+# Validation loss
+def compute_loss(model, dataloader, criterion, gpu_id=None):
+    model.eval()
+    with torch.no_grad():
+        val_losses = []
+        for i, (x_batch, y_batch) in enumerate(dataloader):
+            # print('eval {} of {}'.format(i + 1, len(dataloader)), end='\r')
+            x_batch, y_batch = x_batch.to(gpu_id), y_batch.to(gpu_id)
+            y_pred = model(x_batch)
+            loss = criterion(y_pred, y_batch)
+            val_losses.append(loss.item())
+            del x_batch
+            del y_batch
+            torch.cuda.empty_cache()
+
+        model.train()
+
+        return statistics.mean(val_losses)
+
+
+def threshold_optimization(model, dataloader, gpu_id=None):
+    """
+    Make labels_train predictions for "X" (batch_size, 1000, 3)
+    """
+    save_probs = []
+    save_y = []
+    threshold_opt = np.zeros(5)
+
+    model.eval()
+    with torch.no_grad():
+        #threshold_opt = np.zeros(5)
+        for _, (X, Y) in enumerate(dataloader):
+            X, Y = X.to(gpu_id), Y.to(gpu_id)
+
+            Y = np.array(Y.cpu())
+            #print(Y)
+
+            logits_ = model(X)  # (batch_size, n_classes)
+            probabilities = torch.sigmoid(logits_).cpu()
+
+            save_probs += [probabilities.numpy()]
+            save_y += [Y]
+
+    # find the optimal threshold with ROC curve for each disease
+
+    save_probs = np.array(np.concatenate(save_probs)).reshape((-1, 5))
+    save_y = np.array(np.concatenate(save_y)).reshape((-1, 5))
+    for dis in range(0, 5):
+        # print(probabilities[:, dis])
+        # print(Y[:, dis])
+        fpr, tpr, thresholds = roc_curve(save_y[:, dis], save_probs[:, dis])
+        # geometric mean of sensitivity and specificity
+        gmean = np.sqrt(tpr * (1 - fpr))
+        # optimal threshold
+        index = np.argmax(gmean)
+        threshold_opt[dis] = round(thresholds[index], ndigits=2)
+
+    return threshold_opt
 
 # performance evaluation, compute the tp, fn, fp, and tp for each disease class
 # and compute the specificity and sensitivity

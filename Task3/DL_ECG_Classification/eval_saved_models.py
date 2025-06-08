@@ -17,6 +17,7 @@ def main():
     parser.add_argument('-model', type=str, default='gru')
     parser.add_argument('-path', type=str, default='')
     parser.add_argument('-data', type=str, default='data_for_rnn/')
+    parser.add_argument('-predict_only', type=bool, default=False)
     opt = parser.parse_args()
 
     configure_seed(seed=42)
@@ -102,6 +103,10 @@ def main():
     # # dev dataset
     # dev_dataset = Dataset_for_RNN(path_to_data, samples, 'dev')
     # dev_dataloader = DataLoader(dev_dataset, batch_size=512, shuffle=False)
+
+    if opt.predict_only:
+        
+        return
 
     # threshold optimization
     thr = threshold_optimization(model, test_dataloader, gpu_id=gpu_id)

@@ -32,7 +32,7 @@ class Bottleneck(nn.Module):
         self.i_downsample = i_downsample
         self.stride = stride
         self.relu = nn.ReLU()
-        
+
     def forward(self, x):
         identity = x.clone()
         x = self.relu(self.batch_norm1(self.conv1(x)))
@@ -46,6 +46,7 @@ class Bottleneck(nn.Module):
         x+=identity
         x=self.relu(x)
         return x
+
 
 class Block(nn.Module):
     expansion = 1
@@ -70,9 +71,10 @@ class Block(nn.Module):
       x += identity
       x = self.relu(x)
       return x
-  
+
+
 class ResNet(nn.Module):
-    def __init__(self, ResBlock, layer_list, num_classes, num_channels=9):
+    def __init__(self, ResBlock, layer_list, num_classes, num_channels=36):
         super(ResNet, self).__init__()
         self.in_channels = 16
         self.conv1 = nn.Conv2d(num_channels, 16, kernel_size=7, stride=2, padding=3, bias=False)
@@ -85,7 +87,7 @@ class ResNet(nn.Module):
         self.layer4 = self._make_layer(ResBlock, layer_list[3], planes=128, stride=2)
         self.avgpool = nn.AdaptiveAvgPool2d((1,1))
         self.fc = nn.Linear(128*ResBlock.expansion, num_classes)
-        
+
     def forward(self, x):
         x = self.relu(self.batch_norm1(self.conv1(x)))
         x = self.max_pool(x)
@@ -97,7 +99,7 @@ class ResNet(nn.Module):
         x = x.reshape(x.shape[0], -1)
         x = self.fc(x)
         return x
-        
+
     def _make_layer(self, ResBlock, blocks, planes, stride=1):
         ii_downsample = None
         layers = []
@@ -106,16 +108,16 @@ class ResNet(nn.Module):
                 nn.Conv2d(self.in_channels, planes*ResBlock.expansion, kernel_size=1, stride=stride),
                 nn.BatchNorm2d(planes*ResBlock.expansion)
             )
-            
+
         layers.append(ResBlock(self.in_channels, planes, i_downsample=ii_downsample, stride=stride))
         self.in_channels = planes*ResBlock.expansion
-        
+
         for i in range(blocks-1):
             layers.append(ResBlock(self.in_channels, planes))
-            
+
         return nn.Sequential(*layers)
 
-def ResNet50(num_classes, channels=9):
+def ResNet50(num_classes, channels=36):
     return ResNet(Bottleneck, [3,4,6,3], num_classes, channels)
 
 def train_batch(X, y, model, optimizer, criterion, gpu_id=None, **kwargs):

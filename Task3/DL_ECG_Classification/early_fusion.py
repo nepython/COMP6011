@@ -135,7 +135,7 @@ def fusion_train_batch(X_sig, X_img, y, model, optimizer, criterion,
 
 def fusion_predict(model, X_sig, X_img, thr):
     """
-    Make labels_train predictions for "X" (batch_size, 1000, 3)
+    Make labels_train predictions for "X" (batch_size, 1000, 12)
     """
     logits_ = model(X_sig, X_img)  # (batch_size, n_classes)
     probabilities = torch.sigmoid(logits_).cpu()
@@ -149,7 +149,7 @@ def fusion_predict(model, X_sig, X_img, thr):
 def fusion_evaluate(model, dataloader, thr, gpu_id=None):
     """
     model: Pytorch model
-    X (batch_size, 1000, 3) : batch of examples
+    X (batch_size, 1000, 12) : batch of examples
     y (batch_size, 5): ground truth labels_train
     """
     model.eval()
@@ -176,7 +176,7 @@ def fusion_evaluate(model, dataloader, thr, gpu_id=None):
 def fusion_auroc(model, dataloader, gpu_id=None):
     """
     model: Pytorch model
-    X (batch_size, 1000, 3) : batch of examples
+    X (batch_size, 1000, 12) : batch of examples
     y (batch_size, 5): ground truth labels_train
     """
     model.eval()
@@ -224,7 +224,7 @@ def fusion_compute_loss(model, dataloader, criterion, gpu_id=None):
 
 def fusion_threshold_optimization(model, dataloader, gpu_id=None):
     """
-    Make labels_train predictions for "X" (batch_size, 1000, 3)
+    Run inference on dataloader and find optimal threshold per class using ROC.
     """
     save_probs = []
     save_y = []
@@ -232,30 +232,22 @@ def fusion_threshold_optimization(model, dataloader, gpu_id=None):
 
     model.eval()
     with torch.no_grad():
-
         for i, (X_sig_batch, X_img_batch, y_batch) in enumerate(dataloader):
-            # print('threshold optimization {} of {}'.format(i + 1, len(dataloader)), end='\r')
-
-            X_sig_batch, X_img_batch = X_sig_batch.to(gpu_id), X_img_batch.to(gpu_id)
+            X_sig_batch = X_sig_batch.to(gpu_id)
+            X_img_batch = X_img_batch.to(gpu_id)
 
             probabilities = fusion_predict(model, X_sig_batch, X_img_batch, None)
 
-            save_probs += [probabilities.numpy()]
-            save_y += [y_batch.numpy()]
+            save_probs.append(probabilities.cpu().numpy())  # Use .cpu() to avoid GPU numpy error
+            save_y.append(y_batch.cpu().numpy())
 
-    save_probs = np.array(save_probs).reshape((-1, 5))
-    save_y = np.array(save_y).reshape((-1, 5))
+    save_probs = np.vstack(save_probs)  # (N, 5)
+    save_y = np.vstack(save_y)          # (N, 5)
 
     for disease in range(0, 5):
-        # print(probabilities[:, dis])
-        # print(Y[:, dis])
         fpr, tpr, thresholds = roc_curve(save_y[:, disease], save_probs[:, disease])
-
-        # geometric mean of sensitivity and specificity
         gmean = np.sqrt(tpr * (1 - fpr))
-        # optimal threshold
         index = np.argmax(gmean)
-
         threshold_opt[disease] = thresholds[index]
 
     return threshold_opt
@@ -276,7 +268,7 @@ def training_early(gpu_id, sig_type, img_type, signal_data, image_data, dropout,
         num_layers = 3
         dropout_rate = 0.3
 
-        sig_model = GRU(3, sig_hidden_size, num_layers, 5, dropout_rate, gpu_id=gpu_id,
+        sig_model = GRU(12, sig_hidden_size, num_layers, 5, dropout_rate, gpu_id=gpu_id,
                             bidirectional=False).to(gpu_id)
     elif sig_type == 'bigru':
         sig_path = 'save_models/grubi_dropout05_lr0005_model5'
@@ -284,7 +276,7 @@ def training_early(gpu_id, sig_type, img_type, signal_data, image_data, dropout,
         num_layers = 2
         dropout_rate = 0.5
 
-        sig_model = GRU(3, sig_hidden_size, num_layers, 5, dropout_rate, gpu_id=gpu_id,
+        sig_model = GRU(12, sig_hidden_size, num_layers, 5, dropout_rate, gpu_id=gpu_id,
                             bidirectional=True).to(gpu_id)
     else:
         raise ValueError('1D model is not defined.')
@@ -309,23 +301,34 @@ def training_early(gpu_id, sig_type, img_type, signal_data, image_data, dropout,
     img_model.eval()
 
     # REGISTER HOOKS
-    img_hook = 'conv2d_5'
     sig_hook = 'rnn'
-    img_model.conv2d_5.register_forward_hook(get_activation(img_hook))
     sig_model.rnn.register_forward_hook(get_activation(sig_hook))
 
-    img_size = {'conv2d_1': 6400, 'conv2d_2': 3200, 'conv2d_3': 1024, 'conv2d_4': 2048, 'conv2d_5': 4096}
+    if img_type == 'alexnet':
+        img_hook = 'conv2d_5'
+        img_model.conv2d_5.register_forward_hook(get_activation(img_hook))
+        img_size = {'conv2d_1': 6400, 'conv2d_2': 3200, 'conv2d_3': 1024, 'conv2d_4': 2048, 'conv2d_5': 4096}
+    else:
+        img_hook = 'layer3'
+        img_model.layer3.register_forward_hook(get_activation(img_hook))
+        img_size = {
+            'conv1': 16384,
+            'layer1': 16384,
+            'layer2': 8192,
+            'layer3': 6400,
+            'layer4': 2048
+        }
     sig_features = 256
     img_features = img_size[img_hook]
 
     # LOAD DATA
-    train_dataset = FusionDataset(signal_data, image_data, [17111, 2156, 2163], part='train')
-    dev_dataset = FusionDataset(signal_data, image_data, [17111, 2156, 2163], part='dev')
-    test_dataset = FusionDataset(signal_data, image_data, [17111, 2156, 2163], part='test')
+    train_dataset = FusionDataset(signal_data, image_data, samples, part='train')
+    dev_dataset = FusionDataset(signal_data, image_data, samples, part='dev')
+    test_dataset = FusionDataset(signal_data, image_data, samples, part='test')
 
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=False)
-    dev_dataloader = DataLoader(dev_dataset, batch_size=1, shuffle=False)
-    test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False)
+    dev_dataloader = DataLoader(dev_dataset, batch_size=opt.batch_size, shuffle=False)
+    test_dataloader = DataLoader(test_dataset, batch_size=opt.batch_size, shuffle=False)
 
     model = EarlyFusionNet(5, sig_features, img_features, hidden_size, dropout,
                            sig_model, img_model, sig_hook, img_hook).to(gpu_id)
@@ -463,7 +466,7 @@ def main():
         num_layers = 2
         dropout_rate = 0.3
 
-        sig_model = GRU(3, hidden_size, num_layers, 5, dropout_rate, gpu_id=opt.gpu_id,
+        sig_model = GRU(12, hidden_size, num_layers, 5, dropout_rate, gpu_id=opt.gpu_id,
                             bidirectional=False).to(opt.gpu_id)
     elif sig_type == 'bigru':
         sig_path = 'save_models/grubi_dropout05_lr0005_model5'
@@ -471,7 +474,7 @@ def main():
         num_layers = 2
         dropout_rate = 0.5
 
-        sig_model = GRU(3, hidden_size, num_layers, 5, dropout_rate, gpu_id=opt.gpu_id,
+        sig_model = GRU(12, hidden_size, num_layers, 5, dropout_rate, gpu_id=opt.gpu_id,
                             bidirectional=True).to(opt.gpu_id)
     else:
         raise ValueError('1D model is not defined.')
@@ -496,12 +499,24 @@ def main():
     img_model.eval()
 
     # REGISTER HOOKS
-    img_hook = 'conv2d_5'
+    
     sig_hook = 'rnn'
-    img_model.conv2d_5.register_forward_hook(get_activation(img_hook))
     sig_model.rnn.register_forward_hook(get_activation(sig_hook))
 
-    img_size = {'conv2d_1': 6400, 'conv2d_2': 3200, 'conv2d_3': 1024, 'conv2d_4': 2048, 'conv2d_5': 4096}
+    if img_type == 'alexnet':
+        img_hook = 'conv2d_5'
+        img_model.conv2d_5.register_forward_hook(get_activation(img_hook))
+        img_size = {'conv2d_1': 6400, 'conv2d_2': 3200, 'conv2d_3': 1024, 'conv2d_4': 2048, 'conv2d_5': 4096}
+    else:
+        img_hook = 'layer3'
+        img_model.layer3.register_forward_hook(get_activation(img_hook))
+        img_size = {
+            'conv1': 16384,
+            'layer1': 16384,
+            'layer2': 8192,
+            'layer3': 6400,
+            'layer4': 2048
+        }
     sig_features = 256
     img_features = img_size[img_hook]
 
@@ -511,8 +526,8 @@ def main():
     test_dataset = FusionDataset(opt.signal_data, opt.image_data, samples, part='test')
 
     train_dataloader = DataLoader(train_dataset, batch_size=opt.batch_size, shuffle=False)
-    dev_dataloader = DataLoader(dev_dataset, batch_size=1, shuffle=False)
-    test_dataloader = DataLoader(test_dataset, batch_size=1, shuffle=False)
+    dev_dataloader = DataLoader(dev_dataset, batch_size=opt.batch_size, shuffle=False)
+    test_dataloader = DataLoader(test_dataset, batch_size=opt.batch_size, shuffle=False)
 
     model = EarlyFusionNet(5, sig_features, img_features, opt.hidden_size, opt.dropout,
                            sig_model, img_model, sig_hook, img_hook).to(opt.gpu_id)

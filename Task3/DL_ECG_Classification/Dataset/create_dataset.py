@@ -20,7 +20,8 @@ processed_directory = opt.data
 path_to_save = opt.save_dir
 os.makedirs(path_to_save, exist_ok=True)
 
-print(processed_directory, path_to_save)
+print('Raw data directory:', processed_directory)
+print('Storing processed at:', path_to_save)
 
 # save X_rnn_train
 if opt.only_test != 'true':
@@ -30,21 +31,21 @@ if opt.only_test != 'true':
 # save X_rnn_test
 X_for_RNNs(processed_directory, 'test', save_dir=path_to_save)
 
-# if opt.only_test != 'true':
-#     # save X_cnn_train
-#     X_for_CNNs(processed_directory, 'train', save_dir=path_to_save)
-#     # save X_cnn_dev
-#     X_for_CNNs(processed_directory, 'dev', save_dir=path_to_save)
-# # save X_cnn_test
-# X_for_CNNs(processed_directory, 'test', save_dir=path_to_save)
+if opt.only_test != 'true':
+    # save X_cnn_train
+    X_for_CNNs(processed_directory, 'train', save_dir=path_to_save)
+    # save X_cnn_dev
+    X_for_CNNs(processed_directory, 'dev', save_dir=path_to_save)
+# save X_cnn_test
+X_for_CNNs(processed_directory, 'test', save_dir=path_to_save)
 
 if opt.only_test != 'true':
     # save labels_train
     labels(processed_directory, 'train', save_dir=path_to_save)
     # save labels_dev
     labels(processed_directory, 'dev', save_dir=path_to_save)
-# save labels_test
-labels(processed_directory, 'test', save_dir=path_to_save)
-
-
-
+try:
+    # save labels_test
+    labels(processed_directory, 'test', save_dir=path_to_save)
+except:
+    pass

@@ -15,7 +15,7 @@ import os
 from config import samples, class_weight, class_names
 from sklearn.metrics import roc_curve
 
-#define a CNN based on the AlexNet model, 
+# Defined a CNN based on the AlexNet model,
 # based on: https://medium.com/analytics-vidhya/alexnet-a-simple-implementation-using-pytorch-30c14e8b6db2 (visited on April 27, 2022)
 class AlexNet(nn.Module):
     def __init__(self, n_classes, **kwargs):
@@ -27,7 +27,7 @@ class AlexNet(nn.Module):
         super(AlexNet, self).__init__()
         nb_filters = 8 #number of filters in the first layer
         self.n_classes = n_classes
-        self.conv2d_1 = nn.Conv2d(9,nb_filters,11,stride=4) #9 input channels
+        self.conv2d_1 = nn.Conv2d(36,nb_filters,11,stride=4) #36 input channels
         #nn.Conv2d(in_channels, out_channels, kernel_size)
         self.conv2d_2 = nn.Conv2d(nb_filters, nb_filters*2, 5, padding=2)
         self.conv2d_3 = nn.Conv2d(nb_filters*2, nb_filters*4, 3, padding=1)
@@ -39,13 +39,13 @@ class AlexNet(nn.Module):
         #nn.MaxPool2d(kernel_size)
         self.maxpool2d = nn.MaxPool2d(3, stride=2)
         self.relu = nn.ReLU()
-        self.dropout = nn.Dropout2d(0)
+        self.dropout = nn.Dropout(0)
 
     def forward(self, X, **kwargs):
         """
         Forward Propagation
         Args:
-            X: batch of training examples with dimension (batch_size, 9, 256, 256) 
+            X: batch of training examples with dimension (batch_size, 36, 256, 256) 
         """
         x1 = self.relu(self.conv2d_1(X))
         maxpool1 =  self.maxpool2d(x1)
